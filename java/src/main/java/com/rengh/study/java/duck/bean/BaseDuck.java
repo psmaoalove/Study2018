@@ -17,6 +17,14 @@ public abstract class BaseDuck {
 
     public abstract void display();
 
+    public void setFlyBehavior(FlyBehavior flyBehavior) {
+        this.flyBehavior = flyBehavior;
+    }
+
+    public void setQuackBehavior(QuackBehavior quackBehavior) {
+        this.quackBehavior = quackBehavior;
+    }
+
     public void fly() {
         if (null != flyBehavior) {
             flyBehavior.fly();
@@ -32,4 +40,5 @@ public abstract class BaseDuck {
             System.out.println("Unrealized!");
         }
     }
+
 }

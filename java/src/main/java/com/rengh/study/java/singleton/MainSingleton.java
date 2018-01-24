@@ -1,6 +1,6 @@
 package com.rengh.study.java.singleton;
 
-public class MainClass {
+public class MainSingleton {
     public static void main(String[] args) {
         Singleton.Singleton1.getInstance();
         Singleton.Singleton2.getInstance();
