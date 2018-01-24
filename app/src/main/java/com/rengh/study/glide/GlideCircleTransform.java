@@ -1,5 +1,5 @@
 
-package com.rengh.study.sdk.glide;
+package com.rengh.study.glide;
 
 import android.content.Context;
 import android.graphics.Bitmap;

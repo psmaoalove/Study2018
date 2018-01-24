@@ -1,4 +1,4 @@
-package com.rengh.study.app.application;
+package com.rengh.study.application;
 
 import android.app.Application;
 

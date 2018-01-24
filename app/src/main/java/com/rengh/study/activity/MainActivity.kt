@@ -1,4 +1,4 @@
-package com.rengh.study.app.activity
+package com.rengh.study.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -13,5 +13,29 @@ class MainActivity : AppCompatActivity() {
 
         // Example of a call to a native method
         sample_text.text = "Hello Kotlin!"
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+    override fun finish() {
+        super.finish()
     }
 }

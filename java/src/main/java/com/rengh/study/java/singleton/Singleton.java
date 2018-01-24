@@ -1,4 +1,4 @@
-package com.rengh.study.study.designPattern;
+package com.rengh.study.java.singleton;
 
 /**
  * 单例模式
@@ -6,7 +6,7 @@ package com.rengh.study.study.designPattern;
  */
 public class Singleton {
 
-    private static class Singleton1 {
+    public static class Singleton1 {
         private static Singleton1 sInstance = null;
 
         private Singleton1() {
@@ -20,7 +20,7 @@ public class Singleton {
         }
     }
 
-    private static class Singleton2 {
+    public static class Singleton2 {
         private static Singleton2 sInstance = null;
 
         private Singleton2() {
@@ -35,7 +35,7 @@ public class Singleton {
 
     }
 
-    private static class Singleton3 {
+    public static class Singleton3 {
         private static Singleton3 sInstance = null;
 
         private Singleton3() {
@@ -53,7 +53,7 @@ public class Singleton {
         }
     }
 
-    private static class Singleton4 {
+    public static class Singleton4 {
         private static Singleton4 sInstance = new Singleton4();
 
         private Singleton4() {
@@ -64,7 +64,7 @@ public class Singleton {
         }
     }
 
-    private static class Singleton5 {
+    public static class Singleton5 {
         private static Singleton5 sInstance = null;
 
         static {

@@ -1,5 +1,5 @@
 
-package com.rengh.study.sdk.jniApp;
+package com.rengh.study.jni;
 
 /**
  * Created by rengh on 17-5-29.
