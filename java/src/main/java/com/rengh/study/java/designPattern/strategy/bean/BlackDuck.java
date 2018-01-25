@@ -1,7 +1,7 @@
-package com.rengh.study.java.duck.bean;
+package com.rengh.study.java.designPattern.strategy.bean;
 
-import com.rengh.study.java.duck.fly.FlyLowAltitudeImpl;
-import com.rengh.study.java.duck.quack.QuackGuaguaImpl;
+import com.rengh.study.java.designPattern.strategy.fly.FlyLowAltitudeImpl;
+import com.rengh.study.java.designPattern.strategy.quack.QuackGuaguaImpl;
 
 /**
  * Created by rengh on 18-1-24.

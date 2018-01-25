@@ -1,4 +1,4 @@
-package com.rengh.study.java.duck.fly;
+package com.rengh.study.java.designPattern.strategy.fly;
 
 /**
  * Created by rengh on 18-1-24.

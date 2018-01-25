@@ -1,4 +1,4 @@
-package com.rengh.study.java.singleton;
+package com.rengh.study.java.designPattern.singleton;
 
 public class MainSingleton {
     public static void main(String[] args) {

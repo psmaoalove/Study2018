@@ -1,7 +1,7 @@
-package com.rengh.study.java.duck.bean;
+package com.rengh.study.java.designPattern.strategy.bean;
 
-import com.rengh.study.java.duck.fly.FlyNoWayImpl;
-import com.rengh.study.java.duck.quack.QuackZiziImpl;
+import com.rengh.study.java.designPattern.strategy.fly.FlyNoWayImpl;
+import com.rengh.study.java.designPattern.strategy.quack.QuackZiziImpl;
 
 /**
  * Created by rengh on 18-1-24.

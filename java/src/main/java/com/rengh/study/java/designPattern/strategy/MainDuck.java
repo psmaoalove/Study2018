@@ -1,11 +1,11 @@
-package com.rengh.study.java.duck;
+package com.rengh.study.java.designPattern.strategy;
 
-import com.rengh.study.java.duck.bean.BlackDuck;
-import com.rengh.study.java.duck.bean.YellowDuck;
-import com.rengh.study.java.duck.fly.FlyLowAltitudeImpl;
-import com.rengh.study.java.duck.fly.FlyNoWayImpl;
-import com.rengh.study.java.duck.quack.QuackGuaguaImpl;
-import com.rengh.study.java.duck.quack.QuackZiziImpl;
+import com.rengh.study.java.designPattern.strategy.bean.BlackDuck;
+import com.rengh.study.java.designPattern.strategy.bean.YellowDuck;
+import com.rengh.study.java.designPattern.strategy.fly.FlyLowAltitudeImpl;
+import com.rengh.study.java.designPattern.strategy.fly.FlyNoWayImpl;
+import com.rengh.study.java.designPattern.strategy.quack.QuackGuaguaImpl;
+import com.rengh.study.java.designPattern.strategy.quack.QuackZiziImpl;
 
 public class MainDuck {
     public static void main(String[] args) {

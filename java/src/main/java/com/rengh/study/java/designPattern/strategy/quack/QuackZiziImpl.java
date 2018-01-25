@@ -1,4 +1,4 @@
-package com.rengh.study.java.duck.quack;
+package com.rengh.study.java.designPattern.strategy.quack;
 
 /**
  * Created by rengh on 18-1-24.

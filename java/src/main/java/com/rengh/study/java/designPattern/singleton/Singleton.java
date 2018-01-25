@@ -1,4 +1,4 @@
-package com.rengh.study.java.singleton;
+package com.rengh.study.java.designPattern.singleton;
 
 /**
  * 单例模式

@@ -1,7 +1,7 @@
-package com.rengh.study.java.duck.bean;
+package com.rengh.study.java.designPattern.strategy.bean;
 
-import com.rengh.study.java.duck.fly.FlyBehavior;
-import com.rengh.study.java.duck.quack.QuackBehavior;
+import com.rengh.study.java.designPattern.strategy.fly.FlyBehavior;
+import com.rengh.study.java.designPattern.strategy.quack.QuackBehavior;
 
 /**
  * Created by rengh on 18-1-24.
