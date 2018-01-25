@@ -1,5 +1,8 @@
 package com.rengh.study.java.designPattern.singleton;
 
+/**
+ * 单例模式
+ */
 public class MainSingleton {
     public static void main(String[] args) {
         Singleton.Singleton1.getInstance();

@@ -7,6 +7,9 @@ import com.rengh.study.java.designPattern.strategy.fly.FlyNoWayImpl;
 import com.rengh.study.java.designPattern.strategy.quack.QuackGuaguaImpl;
 import com.rengh.study.java.designPattern.strategy.quack.QuackZiziImpl;
 
+/**
+ * 策略模式
+ */
 public class MainDuck {
     public static void main(String[] args) {
         YellowDuck yellowDuck = new YellowDuck();

@@ -1,9 +1,9 @@
 package com.rengh.study.java.designPattern.observer.java;
 
 /**
+ * 观察者模式（JAVA自带的观察者模式）
  * Created by rengh on 18-1-25.
  */
-
 public class MainObserver {
     public static void main(String[] args) {
         WeatherData weatherData = new WeatherData();

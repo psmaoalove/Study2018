@@ -1,6 +1,7 @@
 package com.rengh.study.java.designPattern.observer.custom;
 
 /**
+ * 观察者模式
  * Created by rengh on 18-1-25.
  */
 
