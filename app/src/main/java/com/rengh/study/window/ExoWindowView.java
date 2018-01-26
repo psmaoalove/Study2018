@@ -24,18 +24,19 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import com.rengh.study.R;
+import com.rengh.study.activity.StudyActivity;
 import com.rengh.study.util.AgentUtils;
 import com.rengh.study.util.common.BitmapUtils;
 import com.rengh.study.util.common.LogUtils;
 import com.rengh.study.util.common.ThreadUtils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -48,7 +49,7 @@ import java.lang.ref.WeakReference;
  * Created by rengh on 2018/1/26.
  */
 
-public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
+public class ExoWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
     private Context context;
     private WindowManagerInterface windowManager;
     private MyHandler mainHandler;
@@ -65,7 +66,7 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
 
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
-    public ExoPlayerWindowView(Context context, ExoWindowManager windowManager) {
+    public ExoWindowView(Context context, MyWindowManager windowManager) {
         mainHandler = new MyHandler(this);
         this.context = context;
         this.windowManager = windowManager;
@@ -73,36 +74,23 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
 
     @Override
     public WindowManager.LayoutParams getParams() {
-        //获取窗口布局参数实例
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        //设置窗口布局参数属性
-        params.width = 1080 / 4 * 3;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = 1080 / 4 * 3 * 9 / 16;//WindowManager.LayoutParams.WRAP_CONTENT;
-        //设置window的显示特性
-//        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-//                | WindowManager.LayoutParams.FLAG_SECURE
-//                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-//                | WindowManager.LayoutParams.FLAG_FULLSCREEN
-//                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        params.width = 192 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
+        params.height = 108 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
+        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+                | WindowManager.LayoutParams.FLAG_SECURE
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON;
-        params.gravity = Gravity.END | Gravity.TOP;
-        params.x = 100;
-        params.y = 100;
-        //设置窗口半透明
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_FULLSCREEN
+                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
         params.format = PixelFormat.TRANSLUCENT;
-        //设置窗口类型
-        params.type = WindowManager.LayoutParams.TYPE_PHONE;
-
+        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
         return params;
     }
 
     @Override
     public View getView() {
-        //获取窗口布局实例
-        View view = View.inflate(context, R.layout.activity_exoplayer, null);
+        View view = View.inflate(context, R.layout.layout_exoplayer, null);
         view.setFocusableInTouchMode(true);
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -114,7 +102,6 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
                 return false;
             }
         });
-
         tvCountdown = view.findViewById(R.id.tv_countdown);
         tvCountdown.setVisibility(View.GONE);
         simpleExoPlayerView = view.findViewById(R.id.player_view);
@@ -125,12 +112,11 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
         // simpleExoPlayerView.setUseController(false);
         simpleExoPlayerView.setControllerVisibilityListener(this);
         simpleExoPlayerView.requestFocus();
-
         return view;
     }
 
     @Override
-    public void initializePlayer() {
+    public void initialize() {
         if (null == player) {
             // 1. Create a default TrackSelector
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -152,7 +138,7 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
     }
 
     @Override
-    public void releasePlayer() {
+    public void release() {
         if (player != null) {
             player.release();
             player = null;
@@ -179,15 +165,15 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
     }
 
     private static class MyHandler extends Handler {
-        private final WeakReference<ExoPlayerWindowView> weakReference;
+        private final WeakReference<ExoWindowView> weakReference;
 
-        public MyHandler(ExoPlayerWindowView windowView) {
-            weakReference = new WeakReference<ExoPlayerWindowView>(windowView);
+        public MyHandler(ExoWindowView windowView) {
+            weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            ExoPlayerWindowView windowView = weakReference.get();
+            ExoWindowView windowView = weakReference.get();
             if (null != windowView) {
                 windowView.processMessage(msg);
             }
@@ -207,6 +193,11 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
                         }
                         tvCountdown.setText(context.getString(R.string.text_exo_countdown,
                                 String.valueOf(time)));
+                        if (12 == time) {
+                            Intent intent = new Intent();
+                            intent.setClass(context, StudyActivity.class);
+                            context.startActivity(intent);
+                        }
                     }
                 }
             }
@@ -217,15 +208,15 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
     }
 
     private static class CountdownThread extends Thread {
-        private final WeakReference<ExoPlayerWindowView> weakReference;
+        private final WeakReference<ExoWindowView> weakReference;
 
-        public CountdownThread(ExoPlayerWindowView windowView) {
-            weakReference = new WeakReference<ExoPlayerWindowView>(windowView);
+        public CountdownThread(ExoWindowView windowView) {
+            weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void run() {
-            ExoPlayerWindowView windowView = weakReference.get();
+            ExoWindowView windowView = weakReference.get();
             while (!windowView.isFinishing()) {
                 windowView.getCountdownMessage();
                 ThreadUtils.sleep(500);
@@ -249,10 +240,10 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
 
     private static class PlayerEventListener extends Player.DefaultEventListener {
         private final String TAG = "PlayerEventListener";
-        private final WeakReference<ExoPlayerWindowView> weakReference;
+        private final WeakReference<ExoWindowView> weakReference;
 
-        public PlayerEventListener(ExoPlayerWindowView windowView) {
-            weakReference = new WeakReference<ExoPlayerWindowView>(windowView);
+        public PlayerEventListener(ExoWindowView windowView) {
+            weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
@@ -276,9 +267,11 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             LogUtils.i(TAG, "onPlayerStateChanged");
-            ExoPlayerWindowView windowView = weakReference.get();
+            ExoWindowView windowView = weakReference.get();
             if (playbackState == Player.STATE_ENDED) {
-                Toast.makeText(windowView.context, "Play completed!", Toast.LENGTH_LONG).show();
+                if (null != windowView) {
+                    Toast.makeText(windowView.context, "Play completed!", Toast.LENGTH_LONG).show();
+                }
                 windowView.finish();
             }
         }
@@ -316,6 +309,10 @@ public class ExoPlayerWindowView implements WindowViewInterface, PlaybackControl
             }
             if (errorString != null) {
                 LogUtils.e(TAG, errorString);
+            }
+            ExoWindowView windowView = weakReference.get();
+            if (null != windowView) {
+                Toast.makeText(windowView.context, "Play error!", Toast.LENGTH_LONG).show();
             }
         }
 

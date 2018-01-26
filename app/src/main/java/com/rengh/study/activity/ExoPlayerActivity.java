@@ -69,7 +69,7 @@ public class ExoPlayerActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exoplayer);
+        setContentView(R.layout.layout_exoplayer);
 
         context = this;
         mainHandler = new MyHandler(this);

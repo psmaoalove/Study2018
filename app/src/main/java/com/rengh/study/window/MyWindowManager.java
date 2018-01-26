@@ -8,21 +8,21 @@ import android.view.WindowManager;
  * Created by rengh on 18-1-26.
  */
 
-public class ExoWindowManager implements WindowManagerInterface {
-    private static ExoWindowManager sInstance;
+public class MyWindowManager implements WindowManagerInterface {
+    private static MyWindowManager sInstance;
     private Context context;
     private WindowManager windowManager;
     private WindowManager.LayoutParams params;
     private View view;
     private WindowViewInterface windowView;
 
-    public ExoWindowManager(Context context) {
+    public MyWindowManager(Context context) {
         this.context = context;
     }
 
-    public static synchronized ExoWindowManager getInstance(Context context) {
+    public static synchronized MyWindowManager getInstance(Context context) {
         if (null == sInstance) {
-            sInstance = new ExoWindowManager(context);
+            sInstance = new MyWindowManager(context);
         }
         return sInstance;
     }
@@ -34,27 +34,27 @@ public class ExoWindowManager implements WindowManagerInterface {
 
     @Override
     public void finish() {
-        windowView.releasePlayer();
+        windowView.release();
         windowManager.removeView(view);
         view.destroyDrawingCache();
         view = null;
         windowManager = null;
     }
 
-    public void openWindow() {
+    public void openWindow(WindowViewInterface windowView) {
         if (null == windowManager) {
             //获取WindowManager实例
             windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         }
 
-        windowView = new ExoPlayerWindowView(context, this);
+        this.windowView = windowView;
         params = windowView.getParams();
         view = windowView.getView();
 
         //显示窗口
         windowManager.addView(view, params);
 
-        windowView.initializePlayer();
+        windowView.initialize();
     }
 
 }

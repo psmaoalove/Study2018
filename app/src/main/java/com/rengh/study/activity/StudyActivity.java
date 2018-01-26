@@ -14,14 +14,18 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.rengh.study.R;
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.window.ExoWindowManager;
+import com.rengh.study.window.ExoWindowView;
+import com.rengh.study.window.MyWindowManager;
+import com.rengh.study.window.VideoWindowView;
 
 public class StudyActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "StudyActivity";
     private Context context;
     private Button btnPlay;
     private VideoView videoView;
+
+    private ExoWindowView exoWindowView;
+    private VideoWindowView videoWindowView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +37,18 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
         btnPlay = findViewById(R.id.btn_play);
         videoView = findViewById(R.id.vv_test);
 
+        exoWindowView = new ExoWindowView(context, MyWindowManager.getInstance(context));
+        videoWindowView = new VideoWindowView(context, MyWindowManager.getInstance(context));
+
         btnPlay.setOnClickListener(this);
     }
 
     @Override
     public void onNewIntent(Intent intent) {
         setIntent(intent);
-
         Uri uri = Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjU1LzQ2Lzc3L2xldHYtZ3VnLzE3LzExMTk3NDU0MDctYXZjLTc3Ny1hYWMtNzctMTUwMDAtNjQyNDcxMi1mNzBmOGFhMTlmNmQ4YzE1YTM0MTljMDQ2MGExN2MwZS0xNTE1NzQyMjY4Nzc5LnRz?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66740468&amp;type=tv_1080p");
         videoView.setVideoURI(uri);
         videoView.start();
-        LogUtils.i(TAG, "onNewIntent() Play video...");
     }
 
     @Override
@@ -69,6 +74,8 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onDestroy() {
         super.onDestroy();
+        videoView.stopPlayback();
+        videoView = null;
     }
 
     @Override
@@ -78,7 +85,7 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (Settings.canDrawOverlays(this)) {
                         //若用户开启了overlay权限,则打开window
-                        ExoWindowManager.getInstance(context).openWindow();
+                        openWindow();
                     } else {
                         Toast.makeText(this, "不开启overlay权限", Toast.LENGTH_SHORT).show();
                     }
@@ -121,9 +128,13 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
                 startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName())), 1);
             } else {
-                ExoWindowManager.getInstance(context).openWindow();
+                openWindow();
             }
         }
+    }
+
+    private void openWindow() {
+        MyWindowManager.getInstance(context).openWindow(videoWindowView);
     }
 
 }

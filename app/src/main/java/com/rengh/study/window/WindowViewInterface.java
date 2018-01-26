@@ -6,13 +6,28 @@ import android.view.WindowManager;
 /**
  * Created by rengh on 2018/1/27.
  */
-
 public interface WindowViewInterface {
+    /**
+     * 获取Params
+     *
+     * @return params
+     */
     WindowManager.LayoutParams getParams();
 
+    /**
+     * 获取View
+     *
+     * @return view
+     */
     View getView();
 
-    void initializePlayer();
+    /**
+     * 初始化view
+     */
+    void initialize();
 
-    void releasePlayer();
+    /**
+     * 释放资源
+     */
+    void release();
 }
