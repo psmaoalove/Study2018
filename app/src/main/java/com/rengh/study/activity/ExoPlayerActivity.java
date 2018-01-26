@@ -38,7 +38,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.rengh.study.R;
-import com.rengh.study.util.AgentUtils;
+import com.rengh.study.util.common.AgentUtils;
 import com.rengh.study.util.common.BitmapUtils;
 import com.rengh.study.util.common.LogUtils;
 import com.rengh.study.util.common.ThreadUtils;

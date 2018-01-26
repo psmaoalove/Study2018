@@ -1,10 +1,13 @@
-package com.rengh.study.window;
+package com.rengh.study.window.view;
 
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 
 import com.rengh.study.R;
 import com.rengh.study.activity.StudyActivity;
 import com.rengh.study.util.common.ThreadUtils;
+import com.rengh.study.window.MyWindowManager;
+import com.rengh.study.window.api.WindowManagerInterface;
+import com.rengh.study.window.api.WindowViewInterface;
 
 import android.content.Context;
 import android.content.Intent;

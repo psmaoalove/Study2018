@@ -1,0 +1,4 @@
+# 策略模式 #
+实现WindowViewInterface接口，实现添加不同的View到WindowManager上展示。
+实现WindowManagerInterface接口，实现每个策略不必关心是哪个类作为WindowManager。
+通过这两个接口，使WindowManager和不同的View之间实现松耦合，模块以接口编程，而非以实现编程，

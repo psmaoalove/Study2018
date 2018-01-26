@@ -14,9 +14,9 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.rengh.study.R;
-import com.rengh.study.window.ExoWindowView;
+import com.rengh.study.window.view.ExoWindowView;
 import com.rengh.study.window.MyWindowManager;
-import com.rengh.study.window.VideoWindowView;
+import com.rengh.study.window.view.VideoWindowView;
 
 public class StudyActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "StudyActivity";

@@ -1,4 +1,4 @@
-package com.rengh.study.window;
+package com.rengh.study.window.api;
 
 import android.view.View;
 import android.view.WindowManager;

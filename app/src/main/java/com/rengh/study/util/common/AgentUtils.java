@@ -1,4 +1,4 @@
-package com.rengh.study.util;
+package com.rengh.study.util.common;
 
 import android.content.Context;
 import android.content.pm.PackageInfo;
