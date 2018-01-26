@@ -2,7 +2,6 @@ package com.rengh.study.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,13 +9,13 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.rengh.study.R;
 import com.rengh.study.util.common.LogUtils;
+import com.rengh.study.window.ExoWindowManager;
 
 public class StudyActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "StudyActivity";
