@@ -1,5 +1,8 @@
 package com.rengh.study.java.designPattern.observer.custom;
 
+import com.rengh.study.java.designPattern.observer.custom.api.MyObserver;
+import com.rengh.study.java.designPattern.observer.custom.api.MyObserverable;
+
 /**
  * 观察者模式
  * Created by rengh on 18-1-25.
@@ -14,6 +17,26 @@ public class MainData {
 
         dataClass.addObserver(displayClass);
         dataClass.addObserver(display2Class);
+
+        dataClass.addObserver(new MyObserver() {
+            private int data1;
+            private int data2;
+
+            @Override
+            public void update(MyObserverable myObserverable, Object object) {
+                if (myObserverable instanceof DataClass) {
+                    DataClass dataClass = (DataClass) myObserverable;
+                    data1 = dataClass.getData1();
+                    data2 = dataClass.getData2();
+                    display();
+                }
+            }
+
+            private void display() {
+                System.out.println("MyObserver-data1: " + data1);
+                System.out.println("MyObserver-data2: " + data2);
+            }
+        });
 
         dataClass.setChanged();
         dataClass.notifyObservers();

@@ -11,6 +11,11 @@ public class Display2Class implements MyObserver {
     private int data1;
     private int data2;
 
+    private void display() {
+        System.out.println("Display2Class-data1: " + data1);
+        System.out.println("Display2Class-data2: " + data2);
+    }
+
     @Override
     public void update(MyObserverable myObserverable, Object object) {
         if (myObserverable instanceof DataClass) {
@@ -19,10 +24,5 @@ public class Display2Class implements MyObserver {
             data2 = dataClass.getData2();
             display();
         }
-    }
-
-    private void display() {
-        System.out.println("Display2Class-data1: " + data1);
-        System.out.println("Display2Class-data2: " + data2);
     }
 }

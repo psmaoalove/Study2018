@@ -1,12 +1,10 @@
 package com.rengh.study.java.designPattern.observer.custom;
 
-import com.rengh.study.java.designPattern.observer.custom.api.MyObserverable;
-
 /**
  * Created by rengh on 18-1-25.
  */
 
-public class DataClass extends MyObserverable {
+public class DataClass extends ObserverableImpl {
     private int data1;
     private int data2;
 
