@@ -24,7 +24,6 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 
 import com.rengh.study.R;
-import com.rengh.study.activity.StudyActivity;
 import com.rengh.study.util.common.AgentUtils;
 import com.rengh.study.util.common.BitmapUtils;
 import com.rengh.study.util.common.LogUtils;
@@ -34,12 +33,12 @@ import com.rengh.study.window.api.WindowManagerInterface;
 import com.rengh.study.window.api.WindowViewInterface;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -53,6 +52,7 @@ import java.lang.ref.WeakReference;
  */
 
 public class ExoWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
+    private static final String TAG = "ExoWindowView";
     private Context context;
     private WindowManagerInterface windowManager;
     private MyHandler mainHandler;
@@ -70,29 +70,37 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
     public ExoWindowView(Context context, MyWindowManager windowManager) {
+        LogUtils.v(TAG, "===== ExoWindowView() =====");
         mainHandler = new MyHandler(this);
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.windowManager = windowManager;
     }
 
     @Override
     public WindowManager.LayoutParams getParams() {
+        LogUtils.v(TAG, "===== getParams() =====");
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.width = 192 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
         params.height = 108 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                | WindowManager.LayoutParams.FLAG_SECURE
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+        params.gravity = Gravity.TOP | Gravity.RIGHT;
+        params.x = 100;
+        params.y = 100;
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+//        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+//                | WindowManager.LayoutParams.FLAG_SECURE
+//                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+//                | WindowManager.LayoutParams.FLAG_FULLSCREEN
+//                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
         params.format = PixelFormat.TRANSLUCENT;
-        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         return params;
     }
 
     @Override
     public View getView() {
+        LogUtils.v(TAG, "===== getView() =====");
         View view = View.inflate(context, R.layout.layout_exoplayer, null);
         view.setFocusableInTouchMode(true);
         view.setOnKeyListener(new View.OnKeyListener() {
@@ -112,7 +120,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         simpleExoPlayerView.setUseArtwork(true);
         simpleExoPlayerView.setDefaultArtwork(
                 BitmapUtils.readBitMap(context, R.mipmap.ic_launcher_round));
-        // simpleExoPlayerView.setUseController(false);
+        simpleExoPlayerView.setUseController(false);
         simpleExoPlayerView.setControllerVisibilityListener(this);
         simpleExoPlayerView.requestFocus();
         return view;
@@ -120,6 +128,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @Override
     public void initialize() {
+        LogUtils.v(TAG, "===== initialize() =====");
         if (null == player) {
             // 1. Create a default TrackSelector
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -142,6 +151,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @Override
     public void release() {
+        LogUtils.v(TAG, "===== release() =====");
         if (player != null) {
             player.release();
             player = null;
@@ -151,6 +161,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @NonNull
     private MediaSource getMediaSource() {
+        LogUtils.v(TAG, "===== getMediaSource() =====");
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
                 AgentUtils.getUserAgent(context, context.getString(R.string.app_name)));
 
@@ -168,14 +179,17 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     private static class MyHandler extends Handler {
+        private final String TAG = "MyHandler";
         private final WeakReference<ExoWindowView> weakReference;
 
         public MyHandler(ExoWindowView windowView) {
+            LogUtils.v(TAG, "===== MyHandler() =====");
             weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void handleMessage(Message msg) {
+            LogUtils.v(TAG, "===== handleMessage() =====");
             ExoWindowView windowView = weakReference.get();
             if (null != windowView) {
                 windowView.processMessage(msg);
@@ -184,6 +198,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     public void processMessage(Message msg) {
+        LogUtils.v(TAG, "===== processMessage() =====");
         switch (msg.what) {
             case WHAT_COUNTDOWN_UPDATE: {
                 int total = msg.arg1;
@@ -196,11 +211,6 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
                         }
                         tvCountdown.setText(context.getString(R.string.text_exo_countdown,
                                 String.valueOf(time)));
-                        if (12 == time) {
-                            Intent intent = new Intent();
-                            intent.setClass(context, StudyActivity.class);
-                            context.startActivity(intent);
-                        }
                     }
                 }
             }
@@ -211,14 +221,17 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     private static class CountdownThread extends Thread {
+        private final String TAG = "CountdownThread";
         private final WeakReference<ExoWindowView> weakReference;
 
         public CountdownThread(ExoWindowView windowView) {
+            LogUtils.v(TAG, "===== CountdownThread() =====");
             weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void run() {
+            LogUtils.v(TAG, "===== run() =====");
             ExoWindowView windowView = weakReference.get();
             while (!windowView.isFinishing()) {
                 windowView.getCountdownMessage();
@@ -228,6 +241,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     public void getCountdownMessage() {
+        LogUtils.v(TAG, "===== getCountdownMessage() =====");
         long duration = player.getDuration();
         long position = player.getCurrentPosition();
         Message msg = new Message();
@@ -239,6 +253,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @Override
     public void onVisibilityChange(int visibility) {
+        LogUtils.v(TAG, "===== onVisibilityChange() =====");
     }
 
     private static class PlayerEventListener extends Player.DefaultEventListener {
@@ -246,30 +261,31 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         private final WeakReference<ExoWindowView> weakReference;
 
         public PlayerEventListener(ExoWindowView windowView) {
+            LogUtils.v(TAG, "===== PlayerEventListener() =====");
             weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
             // Do nothing.
-            LogUtils.i(TAG, "onTimelineChanged");
+            LogUtils.v(TAG, "===== onTimelineChanged() =====");
         }
 
         @Override
         public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
             // Do nothing.
-            LogUtils.i(TAG, "onTracksChanged");
+            LogUtils.v(TAG, "===== onTracksChanged() =====");
         }
 
         @Override
         public void onLoadingChanged(boolean isLoading) {
             // Do nothing.
-            LogUtils.i(TAG, "onLoadingChanged");
+            LogUtils.v(TAG, "===== onLoadingChanged() =====");
         }
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            LogUtils.i(TAG, "onPlayerStateChanged");
+            LogUtils.v(TAG, "===== onPlayerStateChanged() =====");
             ExoWindowView windowView = weakReference.get();
             if (playbackState == Player.STATE_ENDED) {
                 if (null != windowView) {
@@ -282,18 +298,18 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         @Override
         public void onRepeatModeChanged(@Player.RepeatMode int repeatMode) {
             // Do nothing.
-            LogUtils.i(TAG, "onRepeatModeChanged");
+            LogUtils.v(TAG, "===== onRepeatModeChanged() =====");
         }
 
         @Override
         public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
             // Do nothing.
-            LogUtils.i(TAG, "onShuffleModeEnabledChanged");
+            LogUtils.v(TAG, "===== onShuffleModeEnabledChanged() =====");
         }
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-            LogUtils.i(TAG, "onPlayerError");
+            LogUtils.v(TAG, "===== onPlayerError() =====");
             String errorString = null;
             if (error.type == ExoPlaybackException.TYPE_RENDERER) {
                 Exception cause = error.getRendererException();
@@ -316,6 +332,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
             ExoWindowView windowView = weakReference.get();
             if (null != windowView) {
                 Toast.makeText(windowView.context, "Play error!", Toast.LENGTH_LONG).show();
+                windowView.finish();
             }
         }
 
@@ -324,27 +341,29 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
             // This will only occur if the user has performed a seek whilst in the error state. Update
             // the resume position so that if the user then retries, playback will resume from the
             // position to which they seeked.
-            LogUtils.i(TAG, "onPositionDiscontinuity");
+            LogUtils.v(TAG, "===== onPositionDiscontinuity() =====");
         }
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
             // Do nothing.
-            LogUtils.i(TAG, "onPlaybackParametersChanged");
+            LogUtils.v(TAG, "===== onPlaybackParametersChanged() =====");
         }
 
         @Override
         public void onSeekProcessed() {
             // Do nothing.
-            LogUtils.i(TAG, "onSeekProcessed");
+            LogUtils.v(TAG, "===== onSeekProcessed() =====");
         }
     }
 
     public boolean isFinishing() {
+        LogUtils.v(TAG, "===== isFinishing() =====");
         return windowManager.isFinishing();
     }
 
     public void finish() {
+        LogUtils.v(TAG, "===== finish() =====");
         windowManager.finish();
     }
 }

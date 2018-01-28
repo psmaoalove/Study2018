@@ -3,19 +3,18 @@ package com.rengh.study.window.view;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 
 import com.rengh.study.R;
-import com.rengh.study.activity.StudyActivity;
 import com.rengh.study.util.common.ThreadUtils;
 import com.rengh.study.window.MyWindowManager;
 import com.rengh.study.window.api.WindowManagerInterface;
 import com.rengh.study.window.api.WindowViewInterface;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -46,7 +45,7 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
 
     public VideoWindowView(Context context, MyWindowManager windowManager) {
         mainHandler = new MyHandler(this);
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.windowManager = windowManager;
     }
 
@@ -55,14 +54,19 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.width = 192 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
         params.height = 108 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-                | WindowManager.LayoutParams.FLAG_SECURE
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_FULLSCREEN
-                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
+        params.gravity = Gravity.TOP | Gravity.RIGHT;
+        params.x = 100;
+        params.y = 100;
+        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+//        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
+//                | WindowManager.LayoutParams.FLAG_SECURE
+//                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+//                | WindowManager.LayoutParams.FLAG_FULLSCREEN
+//                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
         params.format = PixelFormat.TRANSLUCENT;
-        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
+        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         return params;
     }
 
@@ -99,15 +103,15 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                finish();
                 Toast.makeText(context, "Play completed!", Toast.LENGTH_LONG).show();
+                finish();
             }
         });
         player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                finish();
                 Toast.makeText(context, "Play error!", Toast.LENGTH_LONG).show();
+                finish();
                 return false;
             }
         });
@@ -154,11 +158,6 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
                         }
                         tvCountdown.setText(context.getString(R.string.text_exo_countdown,
                                 String.valueOf(time)));
-                        if (12 == time) {
-                            Intent intent = new Intent();
-                            intent.setClass(context, StudyActivity.class);
-                            context.startActivity(intent);
-                        }
                     }
                 }
             }

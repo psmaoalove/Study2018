@@ -1,5 +1,6 @@
 package com.rengh.study.window;
 
+import com.rengh.study.util.common.LogUtils;
 import com.rengh.study.window.api.WindowManagerInterface;
 import com.rengh.study.window.api.WindowViewInterface;
 
@@ -12,6 +13,7 @@ import android.view.WindowManager;
  */
 
 public class MyWindowManager implements WindowManagerInterface {
+    private static final String TAG = "MyWindowManager";
     private static MyWindowManager sInstance;
     private Context context;
     private WindowManager windowManager;
@@ -20,11 +22,13 @@ public class MyWindowManager implements WindowManagerInterface {
     private WindowViewInterface windowView;
 
     public MyWindowManager(Context context) {
-        this.context = context;
+        LogUtils.v(TAG, "===== MyWindowManager() =====");
+        this.context = context.getApplicationContext();
     }
 
     public static synchronized MyWindowManager getInstance(Context context) {
         if (null == sInstance) {
+            LogUtils.v(TAG, "===== getInstance() =====");
             sInstance = new MyWindowManager(context);
         }
         return sInstance;
@@ -32,11 +36,13 @@ public class MyWindowManager implements WindowManagerInterface {
 
     @Override
     public boolean isFinishing() {
+        LogUtils.v(TAG, "===== isFinishing() =====");
         return null == windowManager;
     }
 
     @Override
     public void finish() {
+        LogUtils.v(TAG, "===== finish() =====");
         windowView.release();
         windowManager.removeView(view);
         view.destroyDrawingCache();
@@ -45,6 +51,7 @@ public class MyWindowManager implements WindowManagerInterface {
     }
 
     public void openWindow(WindowViewInterface windowView) {
+        LogUtils.v(TAG, "===== openWindow() =====");
         if (null == windowManager) {
             //获取WindowManager实例
             windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
