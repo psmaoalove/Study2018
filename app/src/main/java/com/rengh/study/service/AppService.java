@@ -1,13 +1,12 @@
-package com.rengh.study.receiver;
-
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.window.MyWindowManager;
-import com.rengh.study.window.view.ExoWindowView;
+package com.rengh.study.service;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+
+import com.rengh.study.util.common.LogUtils;
+import com.rengh.study.util.common.ServiceUtils;
 
 public class AppService extends Service {
     private final String TAG = "AppService";
@@ -23,6 +22,7 @@ public class AppService extends Service {
     public void onCreate() {
         super.onCreate();
         LogUtils.v(TAG, "===== onCreate() =====");
+        ServiceUtils.startForeground(this, 1);
     }
 
     @Override
@@ -41,7 +41,8 @@ public class AppService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtils.v(TAG, "===== onCreate() =====");
+        LogUtils.v(TAG, "===== onDestroy() =====");
+        ServiceUtils.stopForeground(this, false);
     }
 
 }

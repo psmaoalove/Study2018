@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.rengh.study.activity.StudyActivity">
+    android:background="@color/colorTranslation"
+    tools:context="com.rengh.study.activity.VideoActivity">
 
 </RelativeLayout>

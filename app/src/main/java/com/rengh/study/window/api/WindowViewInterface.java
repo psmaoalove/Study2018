@@ -30,4 +30,13 @@ public interface WindowViewInterface {
      * 释放资源
      */
     void release();
+
+    /**
+     * 是否已经释放资源
+     *
+     * @return true or false
+     */
+    boolean isReleased();
+
+    void setListiner(WindowListiner listiner);
 }

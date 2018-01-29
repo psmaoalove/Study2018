@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Study</string>
-    <string name="text_exo_countdown">广告 %s 秒</string>
+    <string name="text_exo_countdown">广告 %d 秒</string>
 </resources>

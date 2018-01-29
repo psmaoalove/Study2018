@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:keepScreenOn="true">
+    android:layout_height="match_parent" >
 
     <com.rengh.study.view.FullScreenVideoView
         android:id="@+id/player_view"
@@ -19,8 +18,8 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/bg_countdown"
         android:gravity="center"
-        android:paddingTop="6dp"
         android:paddingBottom="6dp"
+        android:paddingTop="6dp"
         android:text="@string/text_exo_countdown"
         android:textColor="@color/colorWhite"
         android:textSize="16sp"

@@ -1,26 +1,22 @@
 package com.rengh.study.window.view;
 
-import com.google.android.exoplayer2.ui.PlaybackControlView;
-
-import com.rengh.study.R;
-import com.rengh.study.util.common.ThreadUtils;
-import com.rengh.study.window.MyWindowManager;
-import com.rengh.study.window.api.WindowManagerInterface;
-import com.rengh.study.window.api.WindowViewInterface;
-
 import android.content.Context;
-import android.graphics.PixelFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.rengh.study.R;
+import com.rengh.study.util.common.ThreadUtils;
+import com.rengh.study.window.api.VideoWindowListiner;
+import com.rengh.study.window.api.WindowListiner;
+import com.rengh.study.window.api.WindowViewInterface;
+import com.rengh.study.window.utils.WindowUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -28,46 +24,29 @@ import java.lang.ref.WeakReference;
  * Created by rengh on 2018/1/26.
  */
 
-public class VideoWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
+public class VideoWindowView implements WindowViewInterface {
     private Context context;
-    private WindowManagerInterface windowManager;
     private MyHandler mainHandler;
     private TextView tvCountdown;
     private VideoView player;
 
-    private Uri[] uris = {
-            Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjYzLzcvODYvbGV0di1ndWcvMTcvMTExMzMwOTkxMC1hdmMtNzc3LWFhYy03Ny0xNTAwMC02Mzc1MjY4LTY4ZTg1NzA3ZTk4N2NhMWQ3MDBjODU5M2YwZmNjMjZlLTE1MDM0NjAxOTY3MjYudHM=?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66097865&amp;type=tv_1080p"),
-            Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjQ4LzI4LzI5L2xldHYtZ3VnLzE3LzExMTk1Mzg2MzUtYXZjLTc3Ny1hYWMtNzctMTUwNDAtNjU2ODM0NC0wOWJjZTQxYTE2MzJiYWI5MWIyOThiYjYxMDY0ZjVkNC0xNTE0NDQ5NTA3MjU0LnRz?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66723569&amp;type=tv_1080p"),
-            Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjU1LzQ2Lzc3L2xldHYtZ3VnLzE3LzExMTk3NDU0MDctYXZjLTc3Ny1hYWMtNzctMTUwMDAtNjQyNDcxMi1mNzBmOGFhMTlmNmQ4YzE1YTM0MTljMDQ2MGExN2MwZS0xNTE1NzQyMjY4Nzc5LnRz?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66740468&amp;type=tv_1080p"),
-    };
+    private VideoWindowListiner listiner;
+
+    private Uri[] uris;
+
+    private int index = 0;
 
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
-    public VideoWindowView(Context context, MyWindowManager windowManager) {
+    public VideoWindowView(Context context, Uri[] uris) {
         mainHandler = new MyHandler(this);
         this.context = context.getApplicationContext();
-        this.windowManager = windowManager;
+        this.uris = uris;
     }
 
     @Override
     public WindowManager.LayoutParams getParams() {
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        params.width = 192 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = 108 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.gravity = Gravity.TOP | Gravity.RIGHT;
-        params.x = 100;
-        params.y = 100;
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-//        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-//                | WindowManager.LayoutParams.FLAG_SECURE
-//                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-//                | WindowManager.LayoutParams.FLAG_FULLSCREEN
-//                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-        params.format = PixelFormat.TRANSLUCENT;
-        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        return params;
+        return WindowUtils.getParams();
     }
 
     @Override
@@ -82,7 +61,9 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    windowManager.finish();
+                    if (null != listiner) {
+                        listiner.onPlayCompletedByUser();
+                    }
                     return true;
                 }
                 return false;
@@ -94,7 +75,13 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
 
     @Override
     public void initialize() {
-        player.setVideoURI(uris[0]);
+        if (index >= uris.length) {
+            if (null != listiner) {
+                listiner.onPlayCompleted();
+            }
+            return;
+        }
+        player.setVideoURI(uris[index++]);
         player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -103,21 +90,25 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
         player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                Toast.makeText(context, "Play completed!", Toast.LENGTH_LONG).show();
-                finish();
+                initialize();
             }
         });
         player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Toast.makeText(context, "Play error!", Toast.LENGTH_LONG).show();
-                finish();
+                if (null != listiner) {
+                    listiner.onPlayError(String.valueOf(what));
+                }
                 return false;
             }
         });
         player.start();
         CountdownThread countdownThread = new CountdownThread(this);
         countdownThread.start();
+
+        if (null != listiner) {
+            listiner.onPlayStart();
+        }
     }
 
     @Override
@@ -127,6 +118,22 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
             player.destroyDrawingCache();
             player = null;
         }
+        mainHandler = null;
+
+        if (null != listiner) {
+            listiner.onReleased();
+            listiner = null;
+        }
+    }
+
+    @Override
+    public boolean isReleased() {
+        return player == null;
+    }
+
+    @Override
+    public void setListiner(WindowListiner listiner) {
+        this.listiner = (VideoWindowListiner) listiner;
     }
 
     private static class MyHandler extends Handler {
@@ -156,8 +163,7 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
                         if (tvCountdown.getVisibility() != View.VISIBLE) {
                             tvCountdown.setVisibility(View.VISIBLE);
                         }
-                        tvCountdown.setText(context.getString(R.string.text_exo_countdown,
-                                String.valueOf(time)));
+                        tvCountdown.setText(context.getString(R.string.text_exo_countdown, time));
                     }
                 }
             }
@@ -177,7 +183,7 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
         @Override
         public void run() {
             VideoWindowView windowView = weakReference.get();
-            while (!windowView.isFinishing()) {
+            while (!windowView.isReleased()) {
                 windowView.getCountdownMessage();
                 ThreadUtils.sleep(500);
             }
@@ -185,24 +191,16 @@ public class VideoWindowView implements WindowViewInterface, PlaybackControlView
     }
 
     public void getCountdownMessage() {
-        long duration = player.getDuration();
-        long position = player.getCurrentPosition();
-        Message msg = new Message();
-        msg.arg1 = (int) duration / 1000;
-        msg.arg2 = (int) position / 1000;
-        msg.what = WHAT_COUNTDOWN_UPDATE;
-        mainHandler.sendMessage(msg);
+        try {
+            long duration = player.getDuration();
+            long position = player.getCurrentPosition();
+            Message msg = new Message();
+            msg.arg1 = (int) duration / 1000;
+            msg.arg2 = (int) position / 1000;
+            msg.what = WHAT_COUNTDOWN_UPDATE;
+            mainHandler.sendMessage(msg);
+        } catch (IllegalStateException e) {
+        }
     }
 
-    @Override
-    public void onVisibilityChange(int visibility) {
-    }
-
-    public boolean isFinishing() {
-        return windowManager.isFinishing();
-    }
-
-    public void finish() {
-        windowManager.finish();
-    }
 }

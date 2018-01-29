@@ -9,10 +9,12 @@ public interface WindowManagerInterface {
      *
      * @return true 或 false
      */
-    boolean isFinishing();
+    boolean isReleased();
 
     /**
      * 结束WindowManager
      */
-    void finish();
+    void release();
+
+    void setListiner(WindowListiner listiner);
 }

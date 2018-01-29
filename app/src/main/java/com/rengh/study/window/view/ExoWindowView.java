@@ -1,5 +1,15 @@
 package com.rengh.study.window.view;
 
+import android.content.Context;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Message;
+import android.support.annotation.NonNull;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.TextView;
+
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.PlaybackParameters;
@@ -22,28 +32,15 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-
 import com.rengh.study.R;
 import com.rengh.study.util.common.AgentUtils;
 import com.rengh.study.util.common.BitmapUtils;
 import com.rengh.study.util.common.LogUtils;
 import com.rengh.study.util.common.ThreadUtils;
-import com.rengh.study.window.MyWindowManager;
-import com.rengh.study.window.api.WindowManagerInterface;
+import com.rengh.study.window.api.VideoWindowListiner;
+import com.rengh.study.window.api.WindowListiner;
 import com.rengh.study.window.api.WindowViewInterface;
-
-import android.content.Context;
-import android.graphics.PixelFormat;
-import android.net.Uri;
-import android.os.Handler;
-import android.os.Message;
-import android.support.annotation.NonNull;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.rengh.study.window.utils.WindowUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -52,62 +49,41 @@ import java.lang.ref.WeakReference;
  */
 
 public class ExoWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
-    private static final String TAG = "ExoWindowView";
     private Context context;
-    private WindowManagerInterface windowManager;
     private MyHandler mainHandler;
     private TextView tvCountdown;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView simpleExoPlayerView;
     private DefaultTrackSelector trackSelector;
 
-    private Uri[] uris = {
-            Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjYzLzcvODYvbGV0di1ndWcvMTcvMTExMzMwOTkxMC1hdmMtNzc3LWFhYy03Ny0xNTAwMC02Mzc1MjY4LTY4ZTg1NzA3ZTk4N2NhMWQ3MDBjODU5M2YwZmNjMjZlLTE1MDM0NjAxOTY3MjYudHM=?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66097865&amp;type=tv_1080p"),
-            Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjQ4LzI4LzI5L2xldHYtZ3VnLzE3LzExMTk1Mzg2MzUtYXZjLTc3Ny1hYWMtNzctMTUwNDAtNjU2ODM0NC0wOWJjZTQxYTE2MzJiYWI5MWIyOThiYjYxMDY0ZjVkNC0xNTE0NDQ5NTA3MjU0LnRz?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66723569&amp;type=tv_1080p"),
-            Uri.parse("http://g3com.cp21.ott.cibntv.net/vod/v1/MjU1LzQ2Lzc3L2xldHYtZ3VnLzE3LzExMTk3NDU0MDctYXZjLTc3Ny1hYWMtNzctMTUwMDAtNjQyNDcxMi1mNzBmOGFhMTlmNmQ4YzE1YTM0MTljMDQ2MGExN2MwZS0xNTE1NzQyMjY4Nzc5LnRz?platid=100&amp;splatid=10000&amp;gugtype=6&amp;mmsid=66740468&amp;type=tv_1080p"),
-    };
+    private VideoWindowListiner listiner;
+
+    private Uri[] uris;
 
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
-    public ExoWindowView(Context context, MyWindowManager windowManager) {
-        LogUtils.v(TAG, "===== ExoWindowView() =====");
+    public ExoWindowView(Context context, Uri[] uris) {
         mainHandler = new MyHandler(this);
         this.context = context.getApplicationContext();
-        this.windowManager = windowManager;
+        this.uris = uris;
     }
 
     @Override
     public WindowManager.LayoutParams getParams() {
-        LogUtils.v(TAG, "===== getParams() =====");
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-        params.width = 192 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.height = 108 * 5;//WindowManager.LayoutParams.MATCH_PARENT;
-        params.gravity = Gravity.TOP | Gravity.RIGHT;
-        params.x = 100;
-        params.y = 100;
-        params.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-//        params.flags = WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM
-//                | WindowManager.LayoutParams.FLAG_SECURE
-//                | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-//                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
-//                | WindowManager.LayoutParams.FLAG_FULLSCREEN
-//                | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-        params.format = PixelFormat.TRANSLUCENT;
-        params.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-        return params;
+        return WindowUtils.getParams();
     }
 
     @Override
     public View getView() {
-        LogUtils.v(TAG, "===== getView() =====");
         View view = View.inflate(context, R.layout.layout_exoplayer, null);
         view.setFocusableInTouchMode(true);
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    windowManager.finish();
+                    if (null != listiner) {
+                        listiner.onPlayCompletedByUser();
+                    }
                     return true;
                 }
                 return false;
@@ -116,19 +92,17 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         tvCountdown = view.findViewById(R.id.tv_countdown);
         tvCountdown.setVisibility(View.GONE);
         simpleExoPlayerView = view.findViewById(R.id.player_view);
-        simpleExoPlayerView.setKeepScreenOn(true);
-        simpleExoPlayerView.setUseArtwork(true);
-        simpleExoPlayerView.setDefaultArtwork(
-                BitmapUtils.readBitMap(context, R.mipmap.ic_launcher_round));
-        simpleExoPlayerView.setUseController(false);
+        simpleExoPlayerView.setUseController(true);
         simpleExoPlayerView.setControllerVisibilityListener(this);
+        simpleExoPlayerView.setUseArtwork(true);
+        simpleExoPlayerView.setDefaultArtwork(BitmapUtils.readBitMap(context, R.mipmap.tv));
+        simpleExoPlayerView.setKeepScreenOn(true);
         simpleExoPlayerView.requestFocus();
         return view;
     }
 
     @Override
     public void initialize() {
-        LogUtils.v(TAG, "===== initialize() =====");
         if (null == player) {
             // 1. Create a default TrackSelector
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
@@ -147,21 +121,43 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
         CountdownThread countdownThread = new CountdownThread(this);
         countdownThread.start();
+
+        if (null != listiner) {
+            listiner.onPlayStart();
+        }
     }
 
     @Override
     public void release() {
-        LogUtils.v(TAG, "===== release() =====");
+        if (null != simpleExoPlayerView) {
+            simpleExoPlayerView.destroyDrawingCache();
+            simpleExoPlayerView = null;
+        }
         if (player != null) {
             player.release();
             player = null;
-            trackSelector = null;
         }
+        trackSelector = null;
+        mainHandler = null;
+
+        if (null != listiner) {
+            listiner.onReleased();
+            listiner = null;
+        }
+    }
+
+    @Override
+    public boolean isReleased() {
+        return player == null;
+    }
+
+    @Override
+    public void setListiner(WindowListiner listiner) {
+        this.listiner = (VideoWindowListiner) listiner;
     }
 
     @NonNull
     private MediaSource getMediaSource() {
-        LogUtils.v(TAG, "===== getMediaSource() =====");
         DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(context,
                 AgentUtils.getUserAgent(context, context.getString(R.string.app_name)));
 
@@ -179,17 +175,14 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     private static class MyHandler extends Handler {
-        private final String TAG = "MyHandler";
         private final WeakReference<ExoWindowView> weakReference;
 
         public MyHandler(ExoWindowView windowView) {
-            LogUtils.v(TAG, "===== MyHandler() =====");
             weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            LogUtils.v(TAG, "===== handleMessage() =====");
             ExoWindowView windowView = weakReference.get();
             if (null != windowView) {
                 windowView.processMessage(msg);
@@ -198,7 +191,6 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     public void processMessage(Message msg) {
-        LogUtils.v(TAG, "===== processMessage() =====");
         switch (msg.what) {
             case WHAT_COUNTDOWN_UPDATE: {
                 int total = msg.arg1;
@@ -209,8 +201,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
                         if (tvCountdown.getVisibility() != View.VISIBLE) {
                             tvCountdown.setVisibility(View.VISIBLE);
                         }
-                        tvCountdown.setText(context.getString(R.string.text_exo_countdown,
-                                String.valueOf(time)));
+                        tvCountdown.setText(context.getString(R.string.text_exo_countdown, time));
                     }
                 }
             }
@@ -221,19 +212,16 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     private static class CountdownThread extends Thread {
-        private final String TAG = "CountdownThread";
         private final WeakReference<ExoWindowView> weakReference;
 
         public CountdownThread(ExoWindowView windowView) {
-            LogUtils.v(TAG, "===== CountdownThread() =====");
             weakReference = new WeakReference<ExoWindowView>(windowView);
         }
 
         @Override
         public void run() {
-            LogUtils.v(TAG, "===== run() =====");
             ExoWindowView windowView = weakReference.get();
-            while (!windowView.isFinishing()) {
+            while (!windowView.isReleased()) {
                 windowView.getCountdownMessage();
                 ThreadUtils.sleep(500);
             }
@@ -241,7 +229,9 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     public void getCountdownMessage() {
-        LogUtils.v(TAG, "===== getCountdownMessage() =====");
+        if (isReleased()) {
+            return;
+        }
         long duration = player.getDuration();
         long position = player.getCurrentPosition();
         Message msg = new Message();
@@ -253,7 +243,6 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @Override
     public void onVisibilityChange(int visibility) {
-        LogUtils.v(TAG, "===== onVisibilityChange() =====");
     }
 
     private static class PlayerEventListener extends Player.DefaultEventListener {
@@ -268,7 +257,6 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
             // Do nothing.
-            LogUtils.v(TAG, "===== onTimelineChanged() =====");
         }
 
         @Override
@@ -280,18 +268,27 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         @Override
         public void onLoadingChanged(boolean isLoading) {
             // Do nothing.
-            LogUtils.v(TAG, "===== onLoadingChanged() =====");
         }
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             LogUtils.v(TAG, "===== onPlayerStateChanged() =====");
             ExoWindowView windowView = weakReference.get();
-            if (playbackState == Player.STATE_ENDED) {
-                if (null != windowView) {
-                    Toast.makeText(windowView.context, "Play completed!", Toast.LENGTH_LONG).show();
-                }
-                windowView.finish();
+            switch (playbackState) {
+                case Player.STATE_IDLE:
+                    LogUtils.v(TAG, "STATE_IDLE!");
+                    break;
+                case Player.STATE_BUFFERING:
+                    LogUtils.v(TAG, "STATE_BUFFERING!");
+                case Player.STATE_READY:
+                    LogUtils.v(TAG, "STATE_READY!");
+                    break;
+                case Player.STATE_ENDED:
+                    LogUtils.v(TAG, "STATE_ENDED!");
+                    if (null != windowView && null != windowView.listiner) {
+                        windowView.listiner.onPlayCompleted();
+                    }
+                    break;
             }
         }
 
@@ -330,9 +327,8 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
                 LogUtils.e(TAG, errorString);
             }
             ExoWindowView windowView = weakReference.get();
-            if (null != windowView) {
-                Toast.makeText(windowView.context, "Play error!", Toast.LENGTH_LONG).show();
-                windowView.finish();
+            if (null != windowView && null != windowView.listiner) {
+                windowView.listiner.onPlayError(errorString);
             }
         }
 
@@ -357,13 +353,4 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         }
     }
 
-    public boolean isFinishing() {
-        LogUtils.v(TAG, "===== isFinishing() =====");
-        return windowManager.isFinishing();
-    }
-
-    public void finish() {
-        LogUtils.v(TAG, "===== finish() =====");
-        windowManager.finish();
-    }
 }
