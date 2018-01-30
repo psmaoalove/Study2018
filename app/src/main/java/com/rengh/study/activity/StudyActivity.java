@@ -2,6 +2,7 @@ package com.rengh.study.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -36,6 +37,14 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_study);
 
         context = this;
+
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            //竖屏
+            Toast.makeText(context, "竖屏", Toast.LENGTH_LONG).show();
+        } else {
+            //横屏
+            Toast.makeText(context, "横屏", Toast.LENGTH_LONG).show();
+        }
 
         btnShell = findViewById(R.id.btn_shell);
         btnService = findViewById(R.id.btn_service);

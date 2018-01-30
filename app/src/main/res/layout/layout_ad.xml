@@ -20,4 +20,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/player_videoview2" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/player_videoview3"
+        android:text="广告展示：ABCDEFGHIJK"
+        android:textSize="30sp" />
 </RelativeLayout>
