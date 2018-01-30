@@ -6,4 +6,44 @@
     android:layout_height="match_parent"
     tools:context="com.rengh.study.activity.StudyActivity">
 
+    <Button
+        android:id="@+id/btn_shell"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="执行shell命令" />
+
+    <Button
+        android:id="@+id/btn_service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_shell"
+        android:text="无障碍服务" />
+
+    <Button
+        android:id="@+id/btn_install"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_service"
+        android:text="智能安装" />
+
+    <Button
+        android:id="@+id/btn_exo_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_install"
+        android:text="ExoPlayer" />
+
+    <Button
+        android:id="@+id/btn_video_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_exo_player"
+        android:text="VideoPlayer" />
+
+    <Button
+        android:id="@+id/btn_ad_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_video_player"
+        android:text="AdPlayer" />
 </RelativeLayout>

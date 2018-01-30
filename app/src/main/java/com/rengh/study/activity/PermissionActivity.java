@@ -31,7 +31,7 @@ public class PermissionActivity extends Activity {
         context = this;
 
         if (checkPermission()) {
-            startVideoActivity();
+            startActivity();
         }
     }
 
@@ -51,7 +51,7 @@ public class PermissionActivity extends Activity {
                     Toast.makeText(context, "Permission denied!", Toast.LENGTH_LONG).show();
                 } else {
                     if (checkPermission()) {
-                        startVideoActivity();
+                        startActivity();
                     }
                 }
             }
@@ -69,7 +69,7 @@ public class PermissionActivity extends Activity {
                     if (Settings.canDrawOverlays(this)) {
                         //若用户开启了overlay权限,则打开window
                         if (checkPermission()) {
-                            startVideoActivity();
+                            startActivity();
                         }
                     } else {
                         Toast.makeText(this, "未开启Overlay权限", Toast.LENGTH_SHORT).show();
@@ -106,10 +106,14 @@ public class PermissionActivity extends Activity {
         return true;
     }
 
-    private void startVideoActivity() {
-        Intent videoActivity = new Intent();
-        videoActivity.setClass(context, VideoActivity.class);
-        startActivity(videoActivity);
+    private void startActivity() {
+        startStudyActivity();
+    }
+
+    private void startStudyActivity() {
+        Intent adActivity = new Intent();
+        adActivity.setClass(context, StudyActivity.class);
+        startActivity(adActivity);
         finish();
     }
 

@@ -69,19 +69,6 @@ public class VideoWindowView implements WindowViewInterface {
                 return false;
             }
         });
-        player.requestFocus();
-        return view;
-    }
-
-    @Override
-    public void initialize() {
-        if (index >= uris.length) {
-            if (null != listiner) {
-                listiner.onPlayCompleted();
-            }
-            return;
-        }
-        player.setVideoURI(uris[index++]);
         player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -102,6 +89,21 @@ public class VideoWindowView implements WindowViewInterface {
                 return false;
             }
         });
+        player.requestFocus();
+        return view;
+    }
+
+    @Override
+    public void initialize() {
+        if (index >= uris.length) {
+            if (null != listiner) {
+//                listiner.onPlayCompleted();
+                index = 0;
+                initialize();
+            }
+            return;
+        }
+        player.setVideoURI(uris[index++]);
         player.start();
         CountdownThread countdownThread = new CountdownThread(this);
         countdownThread.start();

@@ -31,15 +31,22 @@
         </activity>
 
         <activity
+            android:name=".activity.StudyActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".activity.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:launchMode="singleTop"
+            android:theme="@style/FullScreenTheme" />
+
+        <activity
             android:name=".activity.VideoActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
 
         <activity android:name=".activity.MainActivity" />
-
-        <activity
-            android:name=".activity.StudyActivity"
-            android:launchMode="singleTop" />
 
         <receiver android:name=".receiver.MyReceiver">
             <intent-filter>
@@ -51,6 +58,18 @@
             android:name=".service.AppService"
             android:exported="false" />
 
+        <service
+            android:name=".service.MyAccessibilityService"
+            android:label="我的智能安装"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
     </application>
 
 </manifest>

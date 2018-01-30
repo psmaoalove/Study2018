@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer;
 import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.LoopingMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
@@ -92,9 +93,9 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         tvCountdown = view.findViewById(R.id.tv_countdown);
         tvCountdown.setVisibility(View.GONE);
         simpleExoPlayerView = view.findViewById(R.id.player_view);
-        simpleExoPlayerView.setUseController(true);
+        simpleExoPlayerView.setUseController(false);
         simpleExoPlayerView.setControllerVisibilityListener(this);
-        simpleExoPlayerView.setUseArtwork(true);
+        simpleExoPlayerView.setUseArtwork(false);
         simpleExoPlayerView.setDefaultArtwork(BitmapUtils.readBitMap(context, R.mipmap.tv));
         simpleExoPlayerView.setKeepScreenOn(true);
         simpleExoPlayerView.requestFocus();
@@ -104,14 +105,11 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     @Override
     public void initialize() {
         if (null == player) {
-            // 1. Create a default TrackSelector
             BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
             TrackSelection.Factory videoTrackSelectionFactory =
                     new AdaptiveTrackSelection.Factory(bandwidthMeter);
             trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-            // 2. Create the player
             player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
-            // Bind the player to the view.
             simpleExoPlayerView.setPlayer(player);
             player.addListener(new PlayerEventListener(this));
             player.setPlayWhenReady(true);
@@ -169,9 +167,9 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         }
 
         ConcatenatingMediaSource concatenatedSource = new ConcatenatingMediaSource(mediaSourcesArr);
-//        LoopingMediaSource firstSourceTwice = new LoopingMediaSource(concatenatedSource);
+        LoopingMediaSource firstSourceTwice = new LoopingMediaSource(concatenatedSource);
 
-        return concatenatedSource;
+        return firstSourceTwice;
     }
 
     private static class MyHandler extends Handler {
