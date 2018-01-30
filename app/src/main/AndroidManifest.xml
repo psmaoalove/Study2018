@@ -19,12 +19,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity" />
         <activity
-            android:name=".activity.StudyActivity"
-            android:launchMode="singleTop"></activity>
-        <activity
-            android:name=".activity.VideoActivity"
+            android:name=".activity.PermissionActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
             <intent-filter>
@@ -34,6 +30,17 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".activity.VideoActivity"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+
+        <activity android:name=".activity.MainActivity" />
+
+        <activity
+            android:name=".activity.StudyActivity"
+            android:launchMode="singleTop" />
+
         <receiver android:name=".receiver.MyReceiver">
             <intent-filter>
                 <action android:name="com.rengh.action.EXOPLAYER" />
@@ -42,7 +49,8 @@
 
         <service
             android:name=".service.AppService"
-            android:exported="false"></service>
+            android:exported="false" />
+
     </application>
 
 </manifest>
