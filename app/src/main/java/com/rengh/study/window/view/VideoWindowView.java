@@ -27,6 +27,7 @@ import java.lang.ref.WeakReference;
 public class VideoWindowView implements WindowViewInterface {
     private Context context;
     private MyHandler mainHandler;
+    private View view;
     private TextView tvCountdown;
     private VideoView player;
 
@@ -51,45 +52,47 @@ public class VideoWindowView implements WindowViewInterface {
 
     @Override
     public View getView() {
-        View view = View.inflate(context, R.layout.layout_videoview, null);
-        view.setFocusableInTouchMode(true);
-        tvCountdown = view.findViewById(R.id.tv_countdown);
-        tvCountdown.setVisibility(View.GONE);
-        player = view.findViewById(R.id.player_view);
-        player.setKeepScreenOn(true);
-        player.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (null != listiner) {
-                        listiner.onPlayCompletedByUser();
+        if (null == view) {
+            view = View.inflate(context, R.layout.layout_videoview, null);
+            view.setFocusableInTouchMode(true);
+            tvCountdown = view.findViewById(R.id.tv_countdown);
+            tvCountdown.setVisibility(View.GONE);
+            player = view.findViewById(R.id.player_view);
+            player.setKeepScreenOn(true);
+            player.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (null != listiner) {
+                            listiner.onPlayCompletedByUser();
+                        }
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
-                return false;
-            }
-        });
-        player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-            }
-        });
-        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                initialize();
-            }
-        });
-        player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                if (null != listiner) {
-                    listiner.onPlayError(String.valueOf(what));
+            });
+            player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
                 }
-                return false;
-            }
-        });
-        player.requestFocus();
+            });
+            player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    initialize();
+                }
+            });
+            player.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    if (null != listiner) {
+                        listiner.onPlayError(String.valueOf(what));
+                    }
+                    return false;
+                }
+            });
+            player.requestFocus();
+        }
         return view;
     }
 
@@ -134,8 +137,9 @@ public class VideoWindowView implements WindowViewInterface {
     }
 
     @Override
-    public void setListiner(WindowListiner listiner) {
+    public WindowViewInterface setListiner(WindowListiner listiner) {
         this.listiner = (VideoWindowListiner) listiner;
+        return this;
     }
 
     private static class MyHandler extends Handler {

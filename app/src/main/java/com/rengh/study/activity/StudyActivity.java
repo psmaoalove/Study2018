@@ -9,26 +9,31 @@ import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.OrientationEventListener;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.rengh.study.R;
+import com.rengh.study.util.common.AppSigningUtils;
 import com.rengh.study.util.common.LogUtils;
 import com.rengh.study.util.common.ShellUtils;
 import com.rengh.study.util.reflex.SystemPropProxy;
-import com.rengh.study.window.MyWindowManager;
-import com.rengh.study.window.utils.VideoUrisUtils;
-import com.rengh.study.window.view.AdWindowView;
-import com.rengh.study.window.view.ExoWindowView;
-import com.rengh.study.window.view.VideoWindowView;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class StudyActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "StudyActivity";
     private Context context;
-    private Button btnShell, btnService, btnInstall, btnExoPlayer, btnVideoPlayer, btnAdPlayer;
+    private Button btnShell, btnService, btnInstall,
+            btnExoPlayer, btnVideoPlayer, btnAdPlayer,
+            btnTencentLocation;
+
+    /**
+     * 当前屏幕旋转角度
+     */
+    private int mOrientation = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +57,71 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
         btnExoPlayer = findViewById(R.id.btn_exo_player);
         btnVideoPlayer = findViewById(R.id.btn_video_player);
         btnAdPlayer = findViewById(R.id.btn_ad_player);
+        btnTencentLocation = findViewById(R.id.btn_tencent_location);
 
-        btnShell.setText("普通安装");
+        btnShell.setText("旋转屏幕");
         btnShell.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                ShellUtils.su("mount -o remount,rw /system");
 //                ShellUtils.su("setprop service.adb.tcp.port 5555", "stop adbd", "start adbd");
-//                ShellUtils.su("am install -r /sdcard/sjfwz_1.3.0_dangbei.apk");
+//                ShellUtils.su("am install -t -r /sdcard/sjfwz_1.3.0_dangbei.apk");
 //                SystemPropProxy.set(context, "service.adb.tcp.port", "6666");
-                File file = new File("/sdcard/sjfwz_1.3.0_dangbei.apk");
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-                startActivity(intent);
+
+//                XHApiManager xhApiManager = new XHApiManager();
+//                xhApiManager.XHInstallOnBackground("/sdcard/sjfwz_1.3.0_dangbei.apk",
+//                        "com.zerogame.byod");
+
+//                ArrayList<String> signInfos = AppSigningUtils.getSingInfo(context,
+//                        "com.android.settings", AppSigningUtils.MD5);
+//                if (null != signInfos) {
+//                    for (String tmp : signInfos) {
+//                        LogUtils.v(TAG, "===== " + tmp);
+//                    }
+//                }
+
+                String serialno = SystemPropProxy.get(context, "ro.serialno", "");
+                LogUtils.i(TAG, "ro.serialno=" + serialno);
+
+                /**
+                 * 本狮
+                 */
+                // 静默安装
+//                Intent  cmdIntent = new Intent("com.zhsd.setting.syscmd");
+//                cmdIntent.putExtra("cmd", "appinstall");
+//                cmdIntent.putExtra("parm", "/sdcard/sjfwz_1.3.0_dangbei.apk");
+//                sendBroadcast(cmdIntent);
+
+                // 旋转屏幕
+                final String ROTATION_0 = "android.intent.rotation_0";
+                final String ROTATION_90 = "android.intent.rotation_90";
+                final String ROTATION_180 = "android.intent.rotation_180";
+                final String ROTATION_270 = "android.intent.rotation_270";
+                String action = null;
+                switch (mOrientation) {
+                    case 0:
+                        action = ROTATION_90;
+                        mOrientation = 90;
+                        break;
+                    case 90:
+                        action = ROTATION_180;
+                        mOrientation = 180;
+                        break;
+                    case 180:
+                        action = ROTATION_270;
+                        mOrientation = 270;
+                        break;
+                    case 270:
+                        action = ROTATION_0;
+                        mOrientation = 0;
+                        break;
+                    default:
+                        action = ROTATION_90;
+                        mOrientation = 90;
+                        break;
+                }
+                Intent cmdIntent = new Intent(action);
+                sendBroadcast(cmdIntent);
             }
         });
         btnService.setOnClickListener(new View.OnClickListener() {
@@ -81,21 +139,62 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
         btnExoPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onExoPlayerStart();
+                startVideo("ExoPlayer", false);
             }
         });
         btnVideoPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onVideoPlayerStart();
+                startVideo("VideoView", false);
             }
         });
         btnAdPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onAdPlayerStart();
+                startVideo("Ad", false);
             }
         });
+        btnTencentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setClass(context, TencentLocationActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        startOrientationChangeListener();
+    }
+
+
+    /**
+     * 启动屏幕朝向改变监听函数 用于在屏幕横竖屏切换时改变保存的图片的方向
+     * 手动调整不适用
+     */
+    private void startOrientationChangeListener() {
+        OrientationEventListener mOrEventListener = new OrientationEventListener(this) {
+            @Override
+            public void onOrientationChanged(int rotation) {
+                LogUtils.i(TAG, "当前屏幕手持角度方法:" + rotation + "°");
+                if (((rotation >= 0) && (rotation <= 45)) || (rotation > 315)) {
+                    rotation = 0;
+                } else if ((rotation > 45) && (rotation <= 135)) {
+                    rotation = 90;
+                } else if ((rotation > 135) && (rotation <= 225)) {
+                    rotation = 180;
+                } else if ((rotation > 225) && (rotation <= 315)) {
+                    rotation = 270;
+                } else {
+                    rotation = 0;
+                }
+                if (rotation == mOrientation) {
+                    return;
+                }
+                mOrientation = rotation;
+
+            }
+        };
+        mOrEventListener.enable();
     }
 
     @Override
@@ -184,24 +283,12 @@ public class StudyActivity extends AppCompatActivity implements View.OnClickList
         startActivity(localIntent);
     }
 
-    private void onExoPlayerStart() {
-        Intent videoActivity = new Intent();
-        videoActivity.setClass(context, VideoActivity.class);
-        videoActivity.setAction("ExoPlayer");
-        startActivity(videoActivity);
-    }
-
-    private void onVideoPlayerStart() {
-        Intent videoActivity = new Intent();
-        videoActivity.setClass(context, VideoActivity.class);
-        videoActivity.setAction("VideoView");
-        startActivity(videoActivity);
-    }
-
-    private void onAdPlayerStart() {
-        Intent adActivity = new Intent();
-        adActivity.setClass(context, AdActivity.class);
-        startActivity(adActivity);
+    private void startVideo(String type, boolean useWindow) {
+        Intent intent = new Intent();
+        intent.setClass(context, VideoActivity.class);
+        intent.putExtra("type", type);
+        intent.putExtra("useWindow", useWindow);
+        startActivity(intent);
     }
 
 }

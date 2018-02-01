@@ -46,4 +46,11 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/btn_video_player"
         android:text="AdPlayer" />
+
+    <Button
+        android:id="@+id/btn_tencent_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btn_ad_player"
+        android:text="腾讯定位" />
 </RelativeLayout>

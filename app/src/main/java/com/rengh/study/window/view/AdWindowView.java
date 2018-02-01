@@ -14,6 +14,7 @@ import android.widget.VideoView;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.rengh.study.R;
 import com.rengh.study.util.common.ThreadUtils;
+import com.rengh.study.view.MarqueeTextView;
 import com.rengh.study.window.api.VideoWindowListiner;
 import com.rengh.study.window.api.WindowListiner;
 import com.rengh.study.window.api.WindowViewInterface;
@@ -27,7 +28,9 @@ import java.lang.ref.WeakReference;
 public class AdWindowView implements WindowViewInterface {
     private Context context;
     private MyHandler mainHandler;
+    private View view;
     private VideoView videoView1, videoView2, videoView3;
+    private MarqueeTextView marqueeTextView;
     private MediaPlayer.OnCompletionListener completionListener1, completionListener2, completionListener3;
     private MediaPlayer.OnErrorListener errorListener1, errorListener2, errorListener3;
     private MediaPlayer.OnPreparedListener preparedListener1, preparedListener2, preparedListener3;
@@ -53,20 +56,42 @@ public class AdWindowView implements WindowViewInterface {
 
     @Override
     public View getView() {
-        View view = View.inflate(context, R.layout.layout_ad, null);
-        view.setFocusableInTouchMode(true);
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (null != listiner) {
-                        listiner.onPlayCompletedByUser();
+        if (null == view) {
+            view = View.inflate(context, R.layout.layout_ad, null);
+            view.setFocusableInTouchMode(true);
+            view.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (null != listiner) {
+                            listiner.onPlayCompletedByUser();
+                        }
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+            videoView1 = view.findViewById(R.id.player_videoview1);
+            videoView2 = view.findViewById(R.id.player_videoview2);
+            videoView3 = view.findViewById(R.id.player_videoview3);
+            marqueeTextView = view.findViewById(R.id.tv_marquee);
+
+            initListeners();
+
+            videoView1.setOnPreparedListener(preparedListener1);
+            videoView1.setOnCompletionListener(completionListener1);
+            videoView1.setOnErrorListener(errorListener1);
+            videoView2.setOnPreparedListener(preparedListener2);
+            videoView2.setOnCompletionListener(completionListener2);
+            videoView2.setOnErrorListener(errorListener2);
+            videoView3.setOnPreparedListener(preparedListener3);
+            videoView3.setOnCompletionListener(completionListener3);
+            videoView3.setOnErrorListener(errorListener3);
+        }
+        return view;
+    }
+
+    private void initListeners() {
         preparedListener1 = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -87,7 +112,6 @@ public class AdWindowView implements WindowViewInterface {
                 return false;
             }
         };
-
         preparedListener2 = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -108,7 +132,6 @@ public class AdWindowView implements WindowViewInterface {
                 return false;
             }
         };
-
         preparedListener3 = new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -129,24 +152,6 @@ public class AdWindowView implements WindowViewInterface {
                 return false;
             }
         };
-
-        videoView1 = view.findViewById(R.id.player_videoview1);
-        videoView2 = view.findViewById(R.id.player_videoview2);
-        videoView3 = view.findViewById(R.id.player_videoview3);
-
-        videoView1.setOnPreparedListener(preparedListener1);
-        videoView1.setOnCompletionListener(completionListener1);
-        videoView1.setOnErrorListener(errorListener1);
-
-        videoView2.setOnPreparedListener(preparedListener2);
-        videoView2.setOnCompletionListener(completionListener2);
-        videoView2.setOnErrorListener(errorListener2);
-
-        videoView3.setOnPreparedListener(preparedListener3);
-        videoView3.setOnCompletionListener(completionListener3);
-        videoView3.setOnErrorListener(errorListener3);
-
-        return view;
     }
 
     @Override
@@ -201,8 +206,9 @@ public class AdWindowView implements WindowViewInterface {
     }
 
     @Override
-    public void setListiner(WindowListiner listiner) {
+    public AdWindowView setListiner(WindowListiner listiner) {
         this.listiner = (VideoWindowListiner) listiner;
+        return this;
     }
 
     private static class MyHandler extends Handler {

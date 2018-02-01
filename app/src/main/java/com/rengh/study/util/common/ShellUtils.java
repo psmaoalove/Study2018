@@ -45,6 +45,7 @@ public class ShellUtils {
                 while ((result = err.readLine()) != null) {
                     LogUtils.d(TAG, "chmod() result:" + result);
                 }
+                proc.waitFor();
             }
         } catch (IOException e) {
             LogUtils.e(TAG, "chmod() IOException: " + e.getMessage());
@@ -74,6 +75,7 @@ public class ShellUtils {
                     }
                 } catch (IllegalThreadStateException e) {
                 }
+                proc.destroy();
                 proc = null;
             }
         }

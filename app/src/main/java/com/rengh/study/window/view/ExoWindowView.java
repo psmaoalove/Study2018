@@ -52,6 +52,7 @@ import java.lang.ref.WeakReference;
 public class ExoWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
     private Context context;
     private MyHandler mainHandler;
+    private View view;
     private TextView tvCountdown;
     private SimpleExoPlayer player;
     private SimpleExoPlayerView simpleExoPlayerView;
@@ -76,29 +77,31 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @Override
     public View getView() {
-        View view = View.inflate(context, R.layout.layout_exoplayer, null);
-        view.setFocusableInTouchMode(true);
-        view.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    if (null != listiner) {
-                        listiner.onPlayCompletedByUser();
+        if (null == view) {
+            view = View.inflate(context, R.layout.layout_exoplayer, null);
+            view.setFocusableInTouchMode(true);
+            view.setOnKeyListener(new View.OnKeyListener() {
+                @Override
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if (keyCode == KeyEvent.KEYCODE_BACK) {
+                        if (null != listiner) {
+                            listiner.onPlayCompletedByUser();
+                        }
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
-                return false;
-            }
-        });
-        tvCountdown = view.findViewById(R.id.tv_countdown);
-        tvCountdown.setVisibility(View.GONE);
-        simpleExoPlayerView = view.findViewById(R.id.player_view);
-        simpleExoPlayerView.setUseController(false);
-        simpleExoPlayerView.setControllerVisibilityListener(this);
-        simpleExoPlayerView.setUseArtwork(false);
-        simpleExoPlayerView.setDefaultArtwork(BitmapUtils.readBitMap(context, R.mipmap.tv));
-        simpleExoPlayerView.setKeepScreenOn(true);
-        simpleExoPlayerView.requestFocus();
+            });
+            tvCountdown = view.findViewById(R.id.tv_countdown);
+            tvCountdown.setVisibility(View.GONE);
+            simpleExoPlayerView = view.findViewById(R.id.player_view);
+            simpleExoPlayerView.setUseController(false);
+            simpleExoPlayerView.setControllerVisibilityListener(this);
+            simpleExoPlayerView.setUseArtwork(false);
+            simpleExoPlayerView.setDefaultArtwork(BitmapUtils.readBitMap(context, R.mipmap.tv));
+            simpleExoPlayerView.setKeepScreenOn(true);
+            simpleExoPlayerView.requestFocus();
+        }
         return view;
     }
 
@@ -113,15 +116,14 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
             simpleExoPlayerView.setPlayer(player);
             player.addListener(new PlayerEventListener(this));
             player.setPlayWhenReady(true);
-        }
+            player.prepare(getMediaSource());
 
-        player.prepare(getMediaSource());
+            CountdownThread countdownThread = new CountdownThread(this);
+            countdownThread.start();
 
-        CountdownThread countdownThread = new CountdownThread(this);
-        countdownThread.start();
-
-        if (null != listiner) {
-            listiner.onPlayStart();
+            if (null != listiner) {
+                listiner.onPlayStart();
+            }
         }
     }
 
@@ -150,8 +152,9 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     @Override
-    public void setListiner(WindowListiner listiner) {
+    public ExoWindowView setListiner(WindowListiner listiner) {
         this.listiner = (VideoWindowListiner) listiner;
+        return this;
     }
 
     @NonNull

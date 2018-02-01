@@ -38,5 +38,5 @@ public interface WindowViewInterface {
      */
     boolean isReleased();
 
-    void setListiner(WindowListiner listiner);
+    WindowViewInterface setListiner(WindowListiner listiner);
 }

@@ -15,23 +15,47 @@ import com.rengh.study.window.MyWindowManager;
 import com.rengh.study.window.api.VideoWindowListiner;
 import com.rengh.study.window.api.WindowViewInterface;
 import com.rengh.study.window.utils.VideoUrisUtils;
+import com.rengh.study.window.view.AdWindowView;
 import com.rengh.study.window.view.ExoWindowView;
 import com.rengh.study.window.view.VideoWindowView;
 
 public class VideoActivity extends Activity implements View.OnClickListener, VideoWindowListiner {
     private final String TAG = "VideoActivity";
     private Context context;
+    private WindowViewInterface windowView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogUtils.v(TAG, "===== onCreate() =====");
-
         setContentView(R.layout.activity_null);
-
         context = this;
 
-        openWindow();
+        boolean useWindow = false;
+        String type = "";
+        Intent intent = getIntent();
+        if (null != intent) {
+            useWindow = intent.getBooleanExtra("useWindow", false);
+            type = intent.getStringExtra("type");
+        }
+
+        if ("ad".equalsIgnoreCase(type)) {
+            windowView = new AdWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+        } else if ("exoplayer".equalsIgnoreCase(type)) {
+            windowView = new ExoWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+        } else if ("videoview".equalsIgnoreCase(type)) {
+            windowView = new VideoWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+        } else {
+            windowView = new AdWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+        }
+
+        if (useWindow) {
+            // WindowManager展示
+            MyWindowManager.getInstance(context).openWindow(windowView);
+        } else {
+            // Activity展示
+            setContentView(windowView.getView());
+        }
     }
 
     @Override
@@ -45,6 +69,18 @@ public class VideoActivity extends Activity implements View.OnClickListener, Vid
     public void onStart() {
         super.onStart();
         LogUtils.v(TAG, "===== onStart() =====");
+
+        windowView.initialize();
+
+        String msg = "Unknow";
+        if (windowView instanceof AdWindowView) {
+            msg = "Ad...";
+        } else if (windowView instanceof ExoWindowView) {
+            msg = "ExoPlayer...";
+        } else if (windowView instanceof VideoWindowView) {
+            msg = "VideoView...";
+        }
+        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -63,7 +99,8 @@ public class VideoActivity extends Activity implements View.OnClickListener, Vid
     public void onStop() {
         super.onStop();
         LogUtils.v(TAG, "===== onStop() =====");
-        MyWindowManager.getInstance(context).release();
+//        MyWindowManager.getInstance(context).release();
+        windowView.release();
         finish();
     }
 
@@ -124,33 +161,4 @@ public class VideoActivity extends Activity implements View.OnClickListener, Vid
     public void onReleased() {
         LogUtils.v(TAG, "===== onReleased() =====");
     }
-
-    private void openWindow() {
-        LogUtils.v(TAG, "===== openWindow() =====");
-
-        WindowViewInterface windowView = null;
-        MyWindowManager.getInstance(context).setListiner(this);
-
-        String action = null;
-        Intent intent = getIntent();
-        if (null != intent) {
-            action = intent.getAction();
-        }
-        if ("ExoPlayer".equals(action)) {
-            Toast.makeText(context, "ExoPlayer...", Toast.LENGTH_LONG).show();
-            windowView = new ExoWindowView(this, VideoUrisUtils.getUris());
-        } else if ("VideoView".equals(action)) {
-            Toast.makeText(context, "VideoView...", Toast.LENGTH_LONG).show();
-            windowView = new VideoWindowView(this, VideoUrisUtils.getUris());
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            Toast.makeText(context, "VideoView...", Toast.LENGTH_LONG).show();
-            windowView = new VideoWindowView(this, VideoUrisUtils.getUris());
-        } else {
-            Toast.makeText(context, "ExoPlayer...", Toast.LENGTH_LONG).show();
-            windowView = new ExoWindowView(this, VideoUrisUtils.getUris());
-        }
-
-        MyWindowManager.getInstance(context).openWindow(windowView);
-    }
-
 }

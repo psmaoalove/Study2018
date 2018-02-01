@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:attrs_custom="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -26,4 +27,15 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
+    <com.rengh.study.view.MarqueeTextView
+        android:id="@+id/tv_marquee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        attrs_custom:scroll="true"
+        attrs_custom:speed="3"
+        attrs_custom:text="跑马灯滚动测试：广告文本"
+        attrs_custom:textColor="@color/colorWhite"
+        attrs_custom:textSize="30sp" />
 </RelativeLayout>

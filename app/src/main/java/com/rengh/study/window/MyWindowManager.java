@@ -1,13 +1,12 @@
 package com.rengh.study.window;
 
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.window.api.WindowManagerInterface;
-import com.rengh.study.window.api.WindowListiner;
-import com.rengh.study.window.api.WindowViewInterface;
-
 import android.content.Context;
 import android.view.View;
 import android.view.WindowManager;
+
+import com.rengh.study.window.api.WindowListiner;
+import com.rengh.study.window.api.WindowManagerInterface;
+import com.rengh.study.window.api.WindowViewInterface;
 
 /**
  * Created by rengh on 18-1-26.
