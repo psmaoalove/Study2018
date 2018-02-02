@@ -27,7 +27,7 @@ public class TencentLocationActivity extends AppCompatActivity implements Tencen
         setContentView(R.layout.activity_tencent_location);
         LogUtils.i(TAG, "===== onCreate() =====");
 
-        mTvLocationInfo = (TextView) findViewById(R.id.tv_location);
+        mTvLocationInfo = findViewById(R.id.tv_location);
 
         if (Build.VERSION.SDK_INT < 23) {
             startRequestLocation();
