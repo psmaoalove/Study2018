@@ -21,19 +21,19 @@ public class AppService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        LogUtils.v(TAG, "===== onCreate() =====");
+        LogUtils.i(TAG, "===== onCreate() =====");
         ServiceUtils.startForeground(this, 1);
     }
 
     @Override
     public void onStart(Intent intent, int startId) {
-        LogUtils.v(TAG, "===== onStart() =====");
+        LogUtils.i(TAG, "===== onStart() =====");
         // TODO
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        LogUtils.v(TAG, "===== onStartCommand() =====");
+        LogUtils.i(TAG, "===== onStartCommand() =====");
         onStart(intent, startId);
         return START_STICKY;
     }
@@ -41,7 +41,7 @@ public class AppService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtils.v(TAG, "===== onDestroy() =====");
+        LogUtils.i(TAG, "===== onDestroy() =====");
         ServiceUtils.stopForeground(this, false);
     }
 

@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
@@ -17,13 +18,29 @@ import java.util.List;
 
 /**
  * 应用工具，用来判断应用状态、获取其他应用上下文、启动其他应用等操作。
- * 
+ *
  * @author rengh
  * @see "need <uses-permission android:name="android.permission.GET_TASKS"/>"
  * @see "only can be use by system app on new android system."
  */
 public class SystemUtils {
     private static final String TAG = "SystemUtils";
+
+    /**
+     * 获取app version code
+     *
+     * @return version code
+     */
+    public static int getVersionCode(Context context) {
+        try {
+            PackageManager manager = context.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            return info.versionCode;
+        } catch (Exception e) {
+            LogUtils.e(TAG, e.getMessage());
+            return 0;
+        }
+    }
 
     /**
      * 获取顶端activity的包名，Android新版本需要系统应用才可判断
@@ -51,8 +68,8 @@ public class SystemUtils {
 
     /**
      * 判断应用是否在最前端显示，Android新版本需要系统应用才可判断
-     * 
-     * @param context 上下文
+     *
+     * @param context     上下文
      * @param destPkgName 目标包名
      * @return boolean true为在最顶层，false为否
      * @Description: 判断activity是否在最顶层
@@ -79,8 +96,8 @@ public class SystemUtils {
 
     /**
      * 判断应用是否有Activity活着，Android新版本需要系统应用才可判断
-     * 
-     * @param context 上下文
+     *
+     * @param context     上下文
      * @param destPkgName 要判断的应用
      * @return boolean true为在运行，false为已结束
      * @Description: 判断应用是否有activity在运行
@@ -111,7 +128,7 @@ public class SystemUtils {
 
     /**
      * 启动某个应用
-     * 
+     *
      * @param context 调用者上下文
      * @param pkgName 目标应用包名
      * @return true或false
@@ -122,7 +139,7 @@ public class SystemUtils {
 
     /**
      * 启动某个应用
-     * 
+     *
      * @param context 调用者上下文
      * @param pkgName 目标应用包名
      * @param options 启动选项
@@ -156,7 +173,7 @@ public class SystemUtils {
 
     /**
      * 强制结束指定应用
-     * 
+     *
      * @see <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
      * @see <uses-permission android:name="android.permission.FOCE_STOP_PACKAGES" />
      */
@@ -177,8 +194,8 @@ public class SystemUtils {
 
     /**
      * 获取指定应用的上下文
-     * 
-     * @param context 调用者的上下文
+     *
+     * @param context     调用者的上下文
      * @param destPkgName 目标应用的包名
      * @return Context 目标应用上下文，找不到包名时返回null。
      */
@@ -196,5 +213,25 @@ public class SystemUtils {
             e.printStackTrace();
         }
         return otherContext;
+    }
+
+    /**
+     * 获取进程名
+     *
+     * @param context 上下文
+     * @return null or name
+     */
+    public static String getProcessName(Context context) {
+        int pid = android.os.Process.myPid();
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> runningApps = am.getRunningAppProcesses();
+        if (runningApps != null && !runningApps.isEmpty()) {
+            for (ActivityManager.RunningAppProcessInfo procInfo : runningApps) {
+                if (procInfo.pid == pid) {
+                    return procInfo.processName;
+                }
+            }
+        }
+        return null;
     }
 }
