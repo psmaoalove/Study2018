@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">PublicLibrary</string>
+    <string name="text_ad_countdown">广告 %d 秒</string>
+</resources>

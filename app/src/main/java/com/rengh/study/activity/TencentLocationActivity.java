@@ -9,8 +9,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.rengh.library.util.common.LogUtils;
 import com.rengh.study.R;
-import com.rengh.study.util.common.LogUtils;
 import com.tencent.map.geolocation.TencentLocation;
 import com.tencent.map.geolocation.TencentLocationListener;
 import com.tencent.map.geolocation.TencentLocationManager;

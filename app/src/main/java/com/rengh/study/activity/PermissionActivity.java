@@ -12,8 +12,8 @@ import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.rengh.library.util.common.LogUtils;
 import com.rengh.study.R;
-import com.rengh.study.util.common.LogUtils;
 
 public class PermissionActivity extends Activity {
     private final String TAG = "PermissionActivity";

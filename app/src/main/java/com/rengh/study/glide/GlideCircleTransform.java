@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.rengh.study.util.common.BitmapUtils;
+import com.rengh.library.util.common.BitmapUtils;
 
 /**
  * Created by rengh on 17-6-27.

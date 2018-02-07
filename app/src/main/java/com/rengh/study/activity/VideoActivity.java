@@ -9,15 +9,15 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
+import com.rengh.library.util.common.LogUtils;
+import com.rengh.library.window.MyWindowManager;
+import com.rengh.library.window.api.VideoWindowListiner;
+import com.rengh.library.window.api.WindowViewInterface;
+import com.rengh.library.window.utils.VideoUrisUtils;
+import com.rengh.library.window.view.AdWindowView;
+import com.rengh.library.window.view.ExoWindowView;
+import com.rengh.library.window.view.VideoWindowView;
 import com.rengh.study.R;
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.window.MyWindowManager;
-import com.rengh.study.window.api.VideoWindowListiner;
-import com.rengh.study.window.api.WindowViewInterface;
-import com.rengh.study.window.utils.VideoUrisUtils;
-import com.rengh.study.window.view.AdWindowView;
-import com.rengh.study.window.view.ExoWindowView;
-import com.rengh.study.window.view.VideoWindowView;
 
 public class VideoActivity extends Activity implements View.OnClickListener, VideoWindowListiner {
     private final String TAG = "VideoActivity";

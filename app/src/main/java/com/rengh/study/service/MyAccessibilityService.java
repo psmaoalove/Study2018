@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.util.common.ServiceUtils;
+import com.rengh.library.util.common.LogUtils;
+import com.rengh.library.util.common.ServiceUtils;
 
 import java.util.HashMap;
 import java.util.Map;

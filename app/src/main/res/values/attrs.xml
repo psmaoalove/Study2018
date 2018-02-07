@@ -1,10 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="MarqueeTextView">
-        <attr name="scroll" format="boolean" />
-        <attr name="speed" format="float" />
-        <attr name="text" format="reference|string" />
-        <attr name="textColor" format="reference|color" />
-        <attr name="textSize" format="dimension" />
-    </declare-styleable>
 </resources>

@@ -14,14 +14,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.rengh.library.util.common.LogUtils;
+import com.rengh.library.util.common.SystemPropProxy;
 import com.rengh.study.R;
-import com.rengh.study.util.common.AppSigningUtils;
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.util.common.ShellUtils;
-import com.rengh.study.util.reflex.SystemPropProxy;
 
 import java.io.File;
-import java.util.ArrayList;
 
 public class StudyActivity extends AppCompatActivity implements View.OnClickListener {
     private final String TAG = "StudyActivity";

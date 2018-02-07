@@ -4,8 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.rengh.library.util.common.LogUtils;
 import com.rengh.study.service.AppService;
-import com.rengh.study.util.common.LogUtils;
 
 /**
  * Created by rengh on 18-1-29.

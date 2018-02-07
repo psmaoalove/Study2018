@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.rengh.study.util.common.LogUtils;
-import com.rengh.study.util.common.ServiceUtils;
+import com.rengh.library.util.common.LogUtils;
+import com.rengh.library.util.common.ServiceUtils;
 
 public class AppService extends Service {
     private final String TAG = "AppService";
