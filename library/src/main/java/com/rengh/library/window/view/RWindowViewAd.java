@@ -12,28 +12,28 @@ import android.widget.VideoView;
 
 import com.rengh.library.R;
 import com.rengh.library.util.common.ThreadUtils;
-import com.rengh.library.view.MarqueeTextView;
-import com.rengh.library.window.api.VideoWindowListiner;
-import com.rengh.library.window.api.WindowListiner;
-import com.rengh.library.window.api.WindowViewInterface;
-import com.rengh.library.window.utils.WindowUtils;
+import com.rengh.library.view.MarqueeAlwaysTextView;
+import com.rengh.library.window.api.RVideoListinerR;
+import com.rengh.library.window.api.RWindowListiner;
+import com.rengh.library.window.api.RWindowViewInterface;
+import com.rengh.library.window.utils.RParamUtils;
 
 import java.lang.ref.WeakReference;
 
 /**
  * Created by rengh on 2018/1/26.
  */
-public class AdWindowView implements WindowViewInterface {
+public class RWindowViewAd implements RWindowViewInterface {
     private Context context;
     private MyHandler mainHandler;
     private View view;
     private VideoView videoView1, videoView2, videoView3;
-    private MarqueeTextView marqueeTextView;
+    private MarqueeAlwaysTextView marqueeAlwaysTextView;
     private MediaPlayer.OnCompletionListener completionListener1, completionListener2, completionListener3;
     private MediaPlayer.OnErrorListener errorListener1, errorListener2, errorListener3;
     private MediaPlayer.OnPreparedListener preparedListener1, preparedListener2, preparedListener3;
 
-    private VideoWindowListiner listiner;
+    private RVideoListinerR listiner;
 
     private Uri[] uris;
 
@@ -41,7 +41,7 @@ public class AdWindowView implements WindowViewInterface {
 
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
-    public AdWindowView(Context context, Uri[] uris) {
+    public RWindowViewAd(Context context, Uri[] uris) {
         mainHandler = new MyHandler(this);
         this.context = context.getApplicationContext();
         this.uris = uris;
@@ -49,7 +49,7 @@ public class AdWindowView implements WindowViewInterface {
 
     @Override
     public WindowManager.LayoutParams getParams() {
-        return WindowUtils.getParams();
+        return RParamUtils.getParams();
     }
 
     @Override
@@ -72,7 +72,7 @@ public class AdWindowView implements WindowViewInterface {
             videoView1 = view.findViewById(R.id.player_videoview1);
             videoView2 = view.findViewById(R.id.player_videoview2);
             videoView3 = view.findViewById(R.id.player_videoview3);
-            marqueeTextView = view.findViewById(R.id.tv_marquee);
+            marqueeAlwaysTextView = view.findViewById(R.id.tv_marquee);
 
             initListeners();
 
@@ -204,21 +204,21 @@ public class AdWindowView implements WindowViewInterface {
     }
 
     @Override
-    public AdWindowView setListiner(WindowListiner listiner) {
-        this.listiner = (VideoWindowListiner) listiner;
+    public RWindowViewAd setListiner(RWindowListiner listiner) {
+        this.listiner = (RVideoListinerR) listiner;
         return this;
     }
 
     private static class MyHandler extends Handler {
-        private final WeakReference<AdWindowView> weakReference;
+        private final WeakReference<RWindowViewAd> weakReference;
 
-        public MyHandler(AdWindowView windowView) {
-            weakReference = new WeakReference<AdWindowView>(windowView);
+        public MyHandler(RWindowViewAd windowView) {
+            weakReference = new WeakReference<RWindowViewAd>(windowView);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            AdWindowView windowView = weakReference.get();
+            RWindowViewAd windowView = weakReference.get();
             if (null != windowView) {
                 windowView.processMessage(msg);
             }
@@ -243,15 +243,15 @@ public class AdWindowView implements WindowViewInterface {
     }
 
     private static class CountdownThread extends Thread {
-        private final WeakReference<AdWindowView> weakReference;
+        private final WeakReference<RWindowViewAd> weakReference;
 
-        public CountdownThread(AdWindowView windowView) {
-            weakReference = new WeakReference<AdWindowView>(windowView);
+        public CountdownThread(RWindowViewAd windowView) {
+            weakReference = new WeakReference<RWindowViewAd>(windowView);
         }
 
         @Override
         public void run() {
-            AdWindowView windowView = weakReference.get();
+            RWindowViewAd windowView = weakReference.get();
             while (!windowView.isReleased()) {
                 windowView.getCountdownMessage();
                 ThreadUtils.sleep(500);

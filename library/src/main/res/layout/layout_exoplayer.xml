@@ -27,7 +27,7 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <com.rengh.library.view.MarqueeTextView
+    <com.rengh.library.view.MarqueeAlwaysTextView
         android:id="@+id/tv_marquee"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

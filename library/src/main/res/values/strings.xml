@@ -1,4 +1,15 @@
 <resources>
     <string name="app_name">PublicLibrary</string>
     <string name="text_ad_countdown">广告 %d 秒</string>
+    <string name="text_date_show_of_date">yyyy年MM月dd日</string>
+    <string name="text_date_show_of_time">HH时mm分ss秒</string>
+    <string name="text_date_show_of_now">刚刚</string>
+    <string name="text_date_show_of_yestoday">昨天</string>
+    <string name="text_date_show_of_sunday">星期天</string>
+    <string name="text_date_show_of_monday">星期一</string>
+    <string name="text_date_show_of_tuesday">星期二</string>
+    <string name="text_date_show_of_wednesday">星期三</string>
+    <string name="text_date_show_of_thursday">星期四</string>
+    <string name="text_date_show_of_friday">星期五</string>
+    <string name="text_date_show_of_saturday">星期六</string>
 </resources>

@@ -3,26 +3,25 @@ package com.rengh.study.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
 import com.rengh.library.util.common.LogUtils;
-import com.rengh.library.window.MyWindowManager;
-import com.rengh.library.window.api.VideoWindowListiner;
-import com.rengh.library.window.api.WindowViewInterface;
-import com.rengh.library.window.utils.VideoUrisUtils;
-import com.rengh.library.window.view.AdWindowView;
-import com.rengh.library.window.view.ExoWindowView;
-import com.rengh.library.window.view.VideoWindowView;
+import com.rengh.library.window.RWindowManager;
+import com.rengh.library.window.api.RVideoListinerR;
+import com.rengh.library.window.api.RWindowViewInterface;
+import com.rengh.library.window.utils.RVideoUris;
+import com.rengh.library.window.view.RWindowViewAd;
+import com.rengh.library.window.view.RWindowViewExo;
+import com.rengh.library.window.view.RWindowViewVideo;
 import com.rengh.study.R;
 
-public class VideoActivity extends Activity implements View.OnClickListener, VideoWindowListiner {
+public class VideoActivity extends Activity implements View.OnClickListener, RVideoListinerR {
     private final String TAG = "VideoActivity";
     private Context context;
-    private WindowViewInterface windowView;
+    private RWindowViewInterface windowView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +39,18 @@ public class VideoActivity extends Activity implements View.OnClickListener, Vid
         }
 
         if ("ad".equalsIgnoreCase(type)) {
-            windowView = new AdWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+            windowView = new RWindowViewAd(context, RVideoUris.getUris()).setListiner(this);
         } else if ("exoplayer".equalsIgnoreCase(type)) {
-            windowView = new ExoWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+            windowView = new RWindowViewExo(context, RVideoUris.getUris()).setListiner(this);
         } else if ("videoview".equalsIgnoreCase(type)) {
-            windowView = new VideoWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+            windowView = new RWindowViewVideo(context, RVideoUris.getUris()).setListiner(this);
         } else {
-            windowView = new AdWindowView(context, VideoUrisUtils.getUris()).setListiner(this);
+            windowView = new RWindowViewAd(context, RVideoUris.getUris()).setListiner(this);
         }
 
         if (useWindow) {
             // WindowManager展示
-            MyWindowManager.getInstance(context).openWindow(windowView);
+            RWindowManager.getInstance(context).openWindow(windowView);
         } else {
             // Activity展示
             setContentView(windowView.getView());
@@ -73,11 +72,11 @@ public class VideoActivity extends Activity implements View.OnClickListener, Vid
         windowView.initialize();
 
         String msg = "Unknow";
-        if (windowView instanceof AdWindowView) {
+        if (windowView instanceof RWindowViewAd) {
             msg = "Ad...";
-        } else if (windowView instanceof ExoWindowView) {
+        } else if (windowView instanceof RWindowViewExo) {
             msg = "ExoPlayer...";
-        } else if (windowView instanceof VideoWindowView) {
+        } else if (windowView instanceof RWindowViewVideo) {
             msg = "VideoView...";
         }
         Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
@@ -99,7 +98,7 @@ public class VideoActivity extends Activity implements View.OnClickListener, Vid
     public void onStop() {
         super.onStop();
         LogUtils.v(TAG, "===== onStop() =====");
-//        MyWindowManager.getInstance(context).release();
+//        RWindowManager.getInstance(context).release();
         windowView.release();
         finish();
     }

@@ -40,10 +40,10 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.rengh.library.R;
 import com.rengh.library.util.common.LogUtils;
 import com.rengh.library.util.common.ThreadUtils;
-import com.rengh.library.window.api.VideoWindowListiner;
-import com.rengh.library.window.api.WindowListiner;
-import com.rengh.library.window.api.WindowViewInterface;
-import com.rengh.library.window.utils.WindowUtils;
+import com.rengh.library.window.api.RVideoListinerR;
+import com.rengh.library.window.api.RWindowListiner;
+import com.rengh.library.window.api.RWindowViewInterface;
+import com.rengh.library.window.utils.RParamUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -51,7 +51,7 @@ import java.lang.ref.WeakReference;
  * Created by rengh on 2018/1/26.
  */
 
-public class ExoWindowView implements WindowViewInterface, PlaybackControlView.VisibilityListener {
+public class RWindowViewExo implements RWindowViewInterface, PlaybackControlView.VisibilityListener {
     private Context context;
     private MyHandler mainHandler;
     private View view;
@@ -60,13 +60,13 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     private SimpleExoPlayerView simpleExoPlayerView;
     private DefaultTrackSelector trackSelector;
 
-    private VideoWindowListiner listiner;
+    private RVideoListinerR listiner;
 
     private Uri[] uris;
 
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
-    public ExoWindowView(Context context, Uri[] uris) {
+    public RWindowViewExo(Context context, Uri[] uris) {
         mainHandler = new MyHandler(this);
         this.context = context.getApplicationContext();
         this.uris = uris;
@@ -74,7 +74,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     @Override
     public WindowManager.LayoutParams getParams() {
-        return WindowUtils.getParams();
+        return RParamUtils.getParams();
     }
 
     @Override
@@ -153,8 +153,8 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     @Override
-    public ExoWindowView setListiner(WindowListiner listiner) {
-        this.listiner = (VideoWindowListiner) listiner;
+    public RWindowViewExo setListiner(RWindowListiner listiner) {
+        this.listiner = (RVideoListinerR) listiner;
         return this;
     }
 
@@ -177,15 +177,15 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     private static class MyHandler extends Handler {
-        private final WeakReference<ExoWindowView> weakReference;
+        private final WeakReference<RWindowViewExo> weakReference;
 
-        public MyHandler(ExoWindowView windowView) {
-            weakReference = new WeakReference<ExoWindowView>(windowView);
+        public MyHandler(RWindowViewExo windowView) {
+            weakReference = new WeakReference<RWindowViewExo>(windowView);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            ExoWindowView windowView = weakReference.get();
+            RWindowViewExo windowView = weakReference.get();
             if (null != windowView) {
                 windowView.processMessage(msg);
             }
@@ -214,15 +214,15 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
     }
 
     private static class CountdownThread extends Thread {
-        private final WeakReference<ExoWindowView> weakReference;
+        private final WeakReference<RWindowViewExo> weakReference;
 
-        public CountdownThread(ExoWindowView windowView) {
-            weakReference = new WeakReference<ExoWindowView>(windowView);
+        public CountdownThread(RWindowViewExo windowView) {
+            weakReference = new WeakReference<RWindowViewExo>(windowView);
         }
 
         @Override
         public void run() {
-            ExoWindowView windowView = weakReference.get();
+            RWindowViewExo windowView = weakReference.get();
             while (!windowView.isReleased()) {
                 windowView.getCountdownMessage();
                 ThreadUtils.sleep(500);
@@ -249,11 +249,11 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
 
     private static class PlayerEventListener extends Player.DefaultEventListener {
         private final String TAG = "PlayerEventListener";
-        private final WeakReference<ExoWindowView> weakReference;
+        private final WeakReference<RWindowViewExo> weakReference;
 
-        public PlayerEventListener(ExoWindowView windowView) {
+        public PlayerEventListener(RWindowViewExo windowView) {
             LogUtils.v(TAG, "===== PlayerEventListener() =====");
-            weakReference = new WeakReference<ExoWindowView>(windowView);
+            weakReference = new WeakReference<RWindowViewExo>(windowView);
         }
 
         @Override
@@ -275,7 +275,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             LogUtils.v(TAG, "===== onPlayerStateChanged() =====");
-            ExoWindowView windowView = weakReference.get();
+            RWindowViewExo windowView = weakReference.get();
             switch (playbackState) {
                 case Player.STATE_IDLE:
                     LogUtils.v(TAG, "STATE_IDLE!");
@@ -328,7 +328,7 @@ public class ExoWindowView implements WindowViewInterface, PlaybackControlView.V
             if (errorString != null) {
                 LogUtils.e(TAG, errorString);
             }
-            ExoWindowView windowView = weakReference.get();
+            RWindowViewExo windowView = weakReference.get();
             if (null != windowView && null != windowView.listiner) {
                 windowView.listiner.onPlayError(errorString);
             }

@@ -3,7 +3,7 @@ package com.rengh.library.window.api;
 /**
  * Created by rengh on 2018/1/27.
  */
-public interface WindowManagerInterface {
+public interface RWindowManagerInterface {
     /**
      * 判断WindowMananger是否为空
      *
@@ -16,5 +16,5 @@ public interface WindowManagerInterface {
      */
     void release();
 
-    void setListiner(WindowListiner listiner);
+    void setListiner(RWindowListiner listiner);
 }

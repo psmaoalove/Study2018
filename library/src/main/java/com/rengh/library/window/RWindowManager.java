@@ -4,36 +4,36 @@ import android.content.Context;
 import android.view.View;
 import android.view.WindowManager;
 
-import com.rengh.library.window.api.WindowListiner;
-import com.rengh.library.window.api.WindowManagerInterface;
-import com.rengh.library.window.api.WindowViewInterface;
+import com.rengh.library.window.api.RWindowListiner;
+import com.rengh.library.window.api.RWindowManagerInterface;
+import com.rengh.library.window.api.RWindowViewInterface;
 
 /**
  * Created by rengh on 18-1-26.
  */
 
-public class MyWindowManager implements WindowManagerInterface {
-    private static MyWindowManager sInstance;
+public class RWindowManager implements RWindowManagerInterface {
+    private static RWindowManager sInstance;
     private Context context;
     private WindowManager windowManager;
     private WindowManager.LayoutParams params;
     private View view;
-    private WindowViewInterface windowView;
-    private WindowListiner listiner;
+    private RWindowViewInterface windowView;
+    private RWindowListiner listiner;
 
-    public MyWindowManager(Context context) {
+    public RWindowManager(Context context) {
         this.context = context.getApplicationContext();
     }
 
-    public static synchronized MyWindowManager getInstance(Context context) {
+    public static synchronized RWindowManager getInstance(Context context) {
         if (null == sInstance) {
-            sInstance = new MyWindowManager(context);
+            sInstance = new RWindowManager(context);
         }
         return sInstance;
     }
 
     @Override
-    public void setListiner(WindowListiner listiner) {
+    public void setListiner(RWindowListiner listiner) {
         this.listiner = listiner;
     }
 
@@ -55,7 +55,7 @@ public class MyWindowManager implements WindowManagerInterface {
         view = null;
     }
 
-    public void openWindow(WindowViewInterface windowView) {
+    public void openWindow(RWindowViewInterface windowView) {
         if (null == windowManager) {
             //获取WindowManager实例
             windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);

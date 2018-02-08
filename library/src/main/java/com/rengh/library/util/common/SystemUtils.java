@@ -134,18 +134,6 @@ public class SystemUtils {
      * @return true或false
      */
     public static boolean startApplication(Context context, String pkgName) {
-        return startApplication(context, pkgName, null);
-    }
-
-    /**
-     * 启动某个应用
-     *
-     * @param context 调用者上下文
-     * @param pkgName 目标应用包名
-     * @param options 启动选项
-     * @return true或false
-     */
-    public static boolean startApplication(Context context, String pkgName, Bundle options) {
         if (null == context || TextUtils.isEmpty(pkgName)) {
             return false;
         }
@@ -154,21 +142,7 @@ public class SystemUtils {
         if (null != packageManager) {
             intent = packageManager.getLaunchIntentForPackage(pkgName);
         }
-        return startActivity(context, intent, options);
-    }
-
-    private static boolean startActivity(Context context, Intent intent, Bundle options) {
-        if (null != intent) {
-            try {
-                intent.putExtra("from", "com.stv.bootadmanager");
-                // context.startActivity(intent, options);
-                context.startActivity(intent);
-                return true;
-            } catch (ActivityNotFoundException e) {
-            } catch (SecurityException e) {
-            }
-        }
-        return false;
+        return startActivitySafely(context, intent);
     }
 
     /**
@@ -234,4 +208,86 @@ public class SystemUtils {
         }
         return null;
     }
+
+
+    /**
+     * 安全启动指定Activity
+     *
+     * @param context        上下文
+     * @param activityIntent 目标Activity的Intent对象
+     * @return 成功返回true，失败返回false
+     */
+    public static boolean startActivitySafely(Context context, Intent activityIntent) {
+        if (null == context || null == activityIntent) {
+            return false;
+        }
+        try {
+            context.startActivity(activityIntent);
+            LogUtils.i(TAG, "startActivitySafely() start activity success." + activityIntent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            LogUtils.e(TAG, "startActivitySafely() ActivityNotFoundException: " + e.getMessage());
+        } catch (NullPointerException e) {
+            LogUtils.i(TAG, "startActivitySafely() NullPointerException=" + e.getMessage());
+        } catch (Exception e) {
+            LogUtils.e(TAG, "startActivitySafely() Exception: " + e.getMessage());
+        }
+        LogUtils.i(TAG, "startActivitySafely() start activity failed." + activityIntent);
+        return false;
+    }
+
+    /**
+     * 安全启动指定Activity
+     *
+     * @param context 上下文
+     * @param intents 目标Activity数组
+     * @return 成功返回true，失败返回false
+     */
+    public static boolean startActivitysSafely(Context context, Intent[] intents) {
+        boolean success = false;
+        try {
+            if (null != intents && intents.length > 0) {
+                context.startActivities(intents);
+                success = true;
+            }
+        } catch (ActivityNotFoundException e) {
+            LogUtils.i(TAG, "ActivityNotFoundException=" + e.getMessage());
+        } catch (NullPointerException e) {
+            LogUtils.i(TAG, "NullPointerException=" + e.getMessage());
+        } catch (Exception e) {
+            LogUtils.i(TAG, "Exception=" + e.getMessage());
+        }
+        return success;
+    }
+
+    /**
+     * 安全启动目标Service
+     *
+     * @param context       上下文
+     * @param serviceIntent 目标Service的Intent对象
+     * @return 成功返回true，失败返回false
+     */
+    public static boolean startServiceSafely(Context context, Intent serviceIntent) {
+        if (null == context || null == serviceIntent) {
+            return false;
+        }
+        try {
+            ComponentName comName = context.startService(serviceIntent);
+            if (null != comName) {
+                LogUtils.i(TAG,
+                        "startServiceSafely() start service success. {" + comName.getClassName()
+                                + "}");
+                return true;
+            } else {
+                LogUtils.i(TAG, "startServiceSafely() service not exists: " + serviceIntent);
+            }
+        } catch (SecurityException e) {
+            LogUtils.e(TAG, "startServiceSafely() SecurityException: " + e.getMessage());
+        } catch (Exception e) {
+            LogUtils.e(TAG, "startServiceSafely() Exception: " + e.getMessage());
+        }
+        LogUtils.i(TAG, "startServiceSafely() start service failed." + serviceIntent);
+        return false;
+    }
+
 }

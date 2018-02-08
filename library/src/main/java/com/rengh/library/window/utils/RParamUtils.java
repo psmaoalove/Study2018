@@ -10,7 +10,7 @@ import com.rengh.library.R;
  * Created by rengh on 18-1-29.
  */
 
-public class WindowUtils {
+public class RParamUtils {
     public static WindowManager.LayoutParams getParams() {
         WindowManager.LayoutParams params = new WindowManager.LayoutParams();
         params.width = WindowManager.LayoutParams.MATCH_PARENT;//192 * 5;

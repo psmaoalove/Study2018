@@ -13,10 +13,10 @@ import android.widget.VideoView;
 
 import com.rengh.library.R;
 import com.rengh.library.util.common.ThreadUtils;
-import com.rengh.library.window.api.VideoWindowListiner;
-import com.rengh.library.window.api.WindowListiner;
-import com.rengh.library.window.api.WindowViewInterface;
-import com.rengh.library.window.utils.WindowUtils;
+import com.rengh.library.window.api.RVideoListinerR;
+import com.rengh.library.window.api.RWindowListiner;
+import com.rengh.library.window.api.RWindowViewInterface;
+import com.rengh.library.window.utils.RParamUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -24,14 +24,14 @@ import java.lang.ref.WeakReference;
  * Created by rengh on 2018/1/26.
  */
 
-public class VideoWindowView implements WindowViewInterface {
+public class RWindowViewVideo implements RWindowViewInterface {
     private Context context;
     private MyHandler mainHandler;
     private View view;
     private TextView tvCountdown;
     private VideoView player;
 
-    private VideoWindowListiner listiner;
+    private RVideoListinerR listiner;
 
     private Uri[] uris;
 
@@ -39,7 +39,7 @@ public class VideoWindowView implements WindowViewInterface {
 
     private final int WHAT_COUNTDOWN_UPDATE = 1;
 
-    public VideoWindowView(Context context, Uri[] uris) {
+    public RWindowViewVideo(Context context, Uri[] uris) {
         mainHandler = new MyHandler(this);
         this.context = context.getApplicationContext();
         this.uris = uris;
@@ -47,7 +47,7 @@ public class VideoWindowView implements WindowViewInterface {
 
     @Override
     public WindowManager.LayoutParams getParams() {
-        return WindowUtils.getParams();
+        return RParamUtils.getParams();
     }
 
     @Override
@@ -137,21 +137,21 @@ public class VideoWindowView implements WindowViewInterface {
     }
 
     @Override
-    public WindowViewInterface setListiner(WindowListiner listiner) {
-        this.listiner = (VideoWindowListiner) listiner;
+    public RWindowViewInterface setListiner(RWindowListiner listiner) {
+        this.listiner = (RVideoListinerR) listiner;
         return this;
     }
 
     private static class MyHandler extends Handler {
-        private final WeakReference<VideoWindowView> weakReference;
+        private final WeakReference<RWindowViewVideo> weakReference;
 
-        public MyHandler(VideoWindowView windowView) {
-            weakReference = new WeakReference<VideoWindowView>(windowView);
+        public MyHandler(RWindowViewVideo windowView) {
+            weakReference = new WeakReference<RWindowViewVideo>(windowView);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            VideoWindowView windowView = weakReference.get();
+            RWindowViewVideo windowView = weakReference.get();
             if (null != windowView) {
                 windowView.processMessage(msg);
             }
@@ -180,15 +180,15 @@ public class VideoWindowView implements WindowViewInterface {
     }
 
     private static class CountdownThread extends Thread {
-        private final WeakReference<VideoWindowView> weakReference;
+        private final WeakReference<RWindowViewVideo> weakReference;
 
-        public CountdownThread(VideoWindowView windowView) {
-            weakReference = new WeakReference<VideoWindowView>(windowView);
+        public CountdownThread(RWindowViewVideo windowView) {
+            weakReference = new WeakReference<RWindowViewVideo>(windowView);
         }
 
         @Override
         public void run() {
-            VideoWindowView windowView = weakReference.get();
+            RWindowViewVideo windowView = weakReference.get();
             while (!windowView.isReleased()) {
                 windowView.getCountdownMessage();
                 ThreadUtils.sleep(500);

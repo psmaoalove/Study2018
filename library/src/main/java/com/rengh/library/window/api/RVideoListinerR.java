@@ -4,7 +4,7 @@ package com.rengh.library.window.api;
  * Created by rengh on 18-1-29.
  */
 
-public interface VideoWindowListiner extends WindowListiner {
+public interface RVideoListinerR extends RWindowListiner {
     void onPlayStart();
 
     void onPlayError(String err);

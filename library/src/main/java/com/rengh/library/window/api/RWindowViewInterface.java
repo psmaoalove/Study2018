@@ -6,7 +6,7 @@ import android.view.WindowManager;
 /**
  * Created by rengh on 2018/1/27.
  */
-public interface WindowViewInterface {
+public interface RWindowViewInterface {
     /**
      * 获取Params
      *
@@ -38,5 +38,5 @@ public interface WindowViewInterface {
      */
     boolean isReleased();
 
-    WindowViewInterface setListiner(WindowListiner listiner);
+    RWindowViewInterface setListiner(RWindowListiner listiner);
 }

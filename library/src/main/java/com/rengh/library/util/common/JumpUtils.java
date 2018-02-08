@@ -16,98 +16,18 @@ import org.json.JSONObject;
  * @author lap
  * @since All
  */
-public class StartUtils {
+public class JumpUtils {
     private static final String TAG = "LapRemoteStartUtils";
 
-    private StartUtils() {
-    }
-
-    /**
-     * 安全启动指定Activity
-     *
-     * @param context 上下文
-     * @param activityIntent 目标Activity的Intent对象
-     * @return 成功返回true，失败返回false
-     */
-    public static boolean startActivitySafely(Context context, Intent activityIntent) {
-        if (null == context || null == activityIntent) {
-            return false;
-        }
-        try {
-            context.startActivity(activityIntent);
-            LogUtils.i(TAG, "startActivitySafely() start activity success." + activityIntent);
-            return true;
-        } catch (ActivityNotFoundException e) {
-            LogUtils.e(TAG, "startActivitySafely() ActivityNotFoundException: " + e.getMessage());
-        } catch (NullPointerException e) {
-            LogUtils.i(TAG, "startActivitySafely() NullPointerException=" + e.getMessage());
-        } catch (Exception e) {
-            LogUtils.e(TAG, "startActivitySafely() Exception: " + e.getMessage());
-        }
-        LogUtils.i(TAG, "startActivitySafely() start activity failed." + activityIntent);
-        return false;
-    }
-
-    /**
-     * 安全启动指定Activity
-     *
-     * @param context 上下文
-     * @param intents 目标Activity数组
-     * @return 成功返回true，失败返回false
-     */
-    public static boolean startActivitysSafely(Context context, Intent[] intents) {
-        boolean success = false;
-        try {
-            if (null != intents && intents.length > 0) {
-                context.startActivities(intents);
-                success = true;
-            }
-        } catch (ActivityNotFoundException e) {
-            LogUtils.i(TAG, "ActivityNotFoundException=" + e.getMessage());
-        } catch (NullPointerException e) {
-            LogUtils.i(TAG, "NullPointerException=" + e.getMessage());
-        } catch (Exception e) {
-            LogUtils.i(TAG, "Exception=" + e.getMessage());
-        }
-        return success;
-    }
-
-    /**
-     * 安全启动目标Service
-     *
-     * @param context 上下文
-     * @param serviceIntent 目标Service的Intent对象
-     * @return 成功返回true，失败返回false
-     */
-    public static boolean startServiceSafely(Context context, Intent serviceIntent) {
-        if (null == context || null == serviceIntent) {
-            return false;
-        }
-        try {
-            ComponentName comName = context.startService(serviceIntent);
-            if (null != comName) {
-                LogUtils.i(TAG,
-                        "startServiceSafely() start service success. {" + comName.getClassName()
-                                + "}");
-                return true;
-            } else {
-                LogUtils.i(TAG, "startServiceSafely() service not exists: " + serviceIntent);
-            }
-        } catch (SecurityException e) {
-            LogUtils.e(TAG, "startServiceSafely() SecurityException: " + e.getMessage());
-        } catch (Exception e) {
-            LogUtils.e(TAG, "startServiceSafely() Exception: " + e.getMessage());
-        }
-        LogUtils.i(TAG, "startServiceSafely() start service failed." + serviceIntent);
-        return false;
+    private JumpUtils() {
     }
 
     /**
      * 乐视电视、盒子通用跳转，广播跳转。
      *
      * @param context 上下文
-     * @param jump 跳转链接
-     * @param from 来源：包名
+     * @param jump    跳转链接
+     * @param from    来源：包名
      * @return true或false
      */
     public static boolean jump2OtherAppByBroadcast(Context context, String jump, String from) {
@@ -127,8 +47,8 @@ public class StartUtils {
      * 乐视电视、盒子通用跳转，不兼容广播形式。
      *
      * @param context 上下文
-     * @param jump 跳转链接
-     * @param from 来源：包名
+     * @param jump    跳转链接
+     * @param from    来源：包名
      * @return true或false
      */
     public static boolean jump2OtherApp(Context context, String jump, String from) {
@@ -139,7 +59,7 @@ public class StartUtils {
         boolean success = false;
         Intent intent = getJumpIntent(context, jump, from);
         if (null != intent) {
-            success = startActivitySafely(context, intent);
+            success = SystemUtils.startActivitySafely(context, intent);
         }
         return success;
     }
@@ -149,8 +69,8 @@ public class StartUtils {
      *
      * @param context 上下文
      * @param intents 从跳转地返回时的指定应用intent
-     * @param jump 跳转链接
-     * @param from 通用跳转来源：包名
+     * @param jump    跳转链接
+     * @param from    通用跳转来源：包名
      * @return true或false
      */
     public static boolean jump2OtherApp(Context context, Intent[] intents, String jump, String from) {
@@ -160,7 +80,7 @@ public class StartUtils {
         }
         boolean success = false;
         if (TextUtils.isEmpty(jump)) {
-            success = startActivitysSafely(context, intents);
+            success = SystemUtils.startActivitysSafely(context, intents);
         } else {
             Intent intent = getJumpIntent(context, jump, from);
             if (null != intent) {
@@ -170,9 +90,9 @@ public class StartUtils {
                         intents2[i] = intents[i];
                     }
                     intents2[intents2.length - 1] = intent;
-                    success = startActivitysSafely(context, intents2);
+                    success = SystemUtils.startActivitysSafely(context, intents2);
                 } else {
-                    success = startActivitySafely(context, intent);
+                    success = SystemUtils.startActivitySafely(context, intent);
                 }
             }
         }
@@ -183,8 +103,8 @@ public class StartUtils {
      * 通过跳转链接生成对应的Intent
      *
      * @param context 上下文
-     * @param linker 跳转链接
-     * @param from 来源
+     * @param linker  跳转链接
+     * @param from    来源
      * @return Intent
      */
     public static Intent getJumpIntent(Context context, String linker, String from) {

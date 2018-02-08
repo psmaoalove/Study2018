@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="MarqueeTextView">
+    <declare-styleable name="MarqueeAlwaysTextView">
         <attr name="scroll" format="boolean" />
         <attr name="speed" format="float" />
         <attr name="text" format="reference|string" />
